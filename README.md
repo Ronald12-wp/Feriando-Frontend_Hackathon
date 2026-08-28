@@ -80,7 +80,7 @@ flutter run -d chrome
 ## Notas adicionales
 
 - La app está configurada para español (`Locale('es')`).
-- Los assets se cargan desde `assets/images/logo.png`.
+- Los assets se cargan desde `assets/images/logo.jpeg`.
 - El nombre del paquete en `pubspec.yaml` es `fereando`.
 - Si se requiere cambiar el paquete de Android/iOS, usa la herramienta adecuada para renombrar el paquete.
 

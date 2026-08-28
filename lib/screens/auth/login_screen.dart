@@ -5,7 +5,7 @@ import '../../providers/language_provider.dart';
 import '../../services/api_client.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
-import '../../widgets/app_button.dart'; 
+import '../../widgets/app_button.dart';
 import '../../widgets/app_text_field.dart';
 import 'registro_screen.dart';
 
@@ -33,12 +33,17 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _cargando = true);
     try {
-      await context.read<AuthProvider>().login(_telefono.text.trim(), _password.text);
+      await context
+          .read<AuthProvider>()
+          .login(_telefono.text.trim(), _password.text);
     } catch (e) {
       if (mounted) {
         final languageProvider = context.read<LanguageProvider>();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e is ApiException ? e.mensaje : languageProvider.translate('login_error'))),
+          SnackBar(
+              content: Text(e is ApiException
+                  ? e.mensaje
+                  : languageProvider.translate('login_error'))),
         );
       }
     } finally {
@@ -58,22 +63,29 @@ class _LoginScreenState extends State<LoginScreen> {
             child: ListView(
               children: [
                 const SizedBox(height: 48),
-              Image.asset(
-                'assets/images/logo.png',
-                height: 96,
-                fit: BoxFit.contain,
-              ),
-              const SizedBox(height: 20),
-              Text('Bienvendido',
-                  style: AppTextStyles.h1.copyWith(color: AppColors.cafeTierra),
-                  textAlign: TextAlign.center),
-              const SizedBox(height: 4),
-              Text(
-                languageProvider.translate('login_subtitle'),
-                style: AppTextStyles.cuerpo.copyWith(color: AppColors.textoSecundario),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 40),
+                Center(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.zero,
+                    child: Image.asset(
+                      'assets/images/logo.jpeg',
+                      height: 150,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text('Bienvendido',
+                    style:
+                        AppTextStyles.h1.copyWith(color: AppColors.cafeTierra),
+                    textAlign: TextAlign.center),
+                const SizedBox(height: 4),
+                Text(
+                  languageProvider.translate('login_subtitle'),
+                  style: AppTextStyles.cuerpo
+                      .copyWith(color: AppColors.textoSecundario),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 40),
                 AppTextField(
                   etiqueta: languageProvider.translate('login_phone'),
                   controller: _telefono,
@@ -106,7 +118,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   child: Text(
                     languageProvider.translate('login_no_account'),
-                    style: AppTextStyles.cuerpoDestacado.copyWith(color: AppColors.verdeMilpa),
+                    style: AppTextStyles.cuerpoDestacado
+                        .copyWith(color: AppColors.verdeMilpa),
                   ),
                 ),
                 const SizedBox(height: 24),

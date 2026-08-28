@@ -27,14 +27,15 @@ class ApiClient {
   static String get baseUrl {
     const env = String.fromEnvironment(
       'API_BASE_URL',
-      defaultValue: 'http://192.168.0.9:5080/api',
+      defaultValue: 'http://192.168.0.12:5080/api',
     );
     // Si estamos en un emulador Android y la URL apunta a localhost,
     // reescribimos el host a 10.0.2.2. No debemos cambiar IPs de la LAN
     // porque un dispositivo físico puede acceder a ellas directamente.
     try {
       final uri = Uri.parse(env);
-      if (Platform.isAndroid && (uri.host == 'localhost' || uri.host == '127.0.0.1')) {
+      if (Platform.isAndroid &&
+          (uri.host == 'localhost' || uri.host == '127.0.0.1')) {
         return '${uri.scheme}://10.0.2.2:${uri.port}${uri.path}';
       }
     } catch (_) {
@@ -49,7 +50,8 @@ class ApiClient {
     return env;
   }
 
-  Future<Map<String, String>> _headers({bool conAuth = true, bool multipart = false}) async {
+  Future<Map<String, String>> _headers(
+      {bool conAuth = true, bool multipart = false}) async {
     final headers = <String, String>{};
     if (!multipart) {
       headers['Content-Type'] = 'application/json';
@@ -72,7 +74,7 @@ class ApiClient {
   }
 
   Uri _uri(String ruta) => Uri.parse('$baseUrl$ruta');
-  
+
   Uri _debugUri(String ruta) {
     final uri = _uri(ruta);
     if (kDebugMode) {
@@ -86,16 +88,19 @@ class ApiClient {
 
   Future<dynamic> get(String ruta, {bool conAuth = true}) async {
     try {
-      final res = await http.get(_debugUri(ruta), headers: await _headers(conAuth: conAuth));
+      final res = await http.get(_debugUri(ruta),
+          headers: await _headers(conAuth: conAuth));
       return _procesar(res);
     } on SocketException {
-      throw ApiException('No se pudo conectar a la API. Verifica tu red y que el backend esté activo.');
+      throw ApiException(
+          'No se pudo conectar a la API. Verifica tu red y que el backend esté activo.');
     } on HttpException {
       throw ApiException('Error HTTP al intentar conectar con la API.');
     }
   }
 
-  Future<dynamic> post(String ruta, Map<String, dynamic> body, {bool conAuth = true}) async {
+  Future<dynamic> post(String ruta, Map<String, dynamic> body,
+      {bool conAuth = true}) async {
     try {
       final res = await http.post(
         _debugUri(ruta),
@@ -104,13 +109,15 @@ class ApiClient {
       );
       return _procesar(res);
     } on SocketException {
-      throw ApiException('No se pudo conectar a la API. Verifica tu red y que el backend esté activo.');
+      throw ApiException(
+          'No se pudo conectar a la API. Verifica tu red y que el backend esté activo.');
     } on HttpException {
       throw ApiException('Error HTTP al intentar conectar con la API.');
     }
   }
 
-  Future<dynamic> put(String ruta, Map<String, dynamic> body, {bool conAuth = true}) async {
+  Future<dynamic> put(String ruta, Map<String, dynamic> body,
+      {bool conAuth = true}) async {
     try {
       final res = await http.put(
         _debugUri(ruta),
@@ -119,7 +126,8 @@ class ApiClient {
       );
       return _procesar(res);
     } on SocketException {
-      throw ApiException('No se pudo conectar a la API. Verifica tu red y que el backend esté activo.');
+      throw ApiException(
+          'No se pudo conectar a la API. Verifica tu red y que el backend esté activo.');
     } on HttpException {
       throw ApiException('Error HTTP al intentar conectar con la API.');
     }
@@ -142,7 +150,8 @@ class ApiClient {
       }
       if (files != null) {
         for (var file in files) {
-          final multipartFile = await http.MultipartFile.fromPath(fileFieldName, file.path);
+          final multipartFile =
+              await http.MultipartFile.fromPath(fileFieldName, file.path);
           request.files.add(multipartFile);
         }
       }
@@ -150,7 +159,8 @@ class ApiClient {
       final res = await http.Response.fromStream(streamed);
       return _procesar(res);
     } on SocketException {
-      throw ApiException('No se pudo conectar a la API. Verifica tu red y que el backend esté activo.');
+      throw ApiException(
+          'No se pudo conectar a la API. Verifica tu red y que el backend esté activo.');
     } on HttpException {
       throw ApiException('Error HTTP al intentar conectar con la API.');
     }
@@ -173,7 +183,8 @@ class ApiClient {
       }
       if (files != null) {
         for (var file in files) {
-          final multipartFile = await http.MultipartFile.fromPath(fileFieldName, file.path);
+          final multipartFile =
+              await http.MultipartFile.fromPath(fileFieldName, file.path);
           request.files.add(multipartFile);
         }
       }
@@ -181,14 +192,16 @@ class ApiClient {
       final res = await http.Response.fromStream(streamed);
       return _procesar(res);
     } on SocketException {
-      throw ApiException('No se pudo conectar a la API. Verifica tu red y que el backend esté activo.');
+      throw ApiException(
+          'No se pudo conectar a la API. Verifica tu red y que el backend esté activo.');
     } on HttpException {
       throw ApiException('Error HTTP al intentar conectar con la API.');
     }
   }
 
   Future<dynamic> delete(String ruta, {bool conAuth = true}) async {
-    final res = await http.delete(_debugUri(ruta), headers: await _headers(conAuth: conAuth));
+    final res = await http.delete(_debugUri(ruta),
+        headers: await _headers(conAuth: conAuth));
     return _procesar(res);
   }
 

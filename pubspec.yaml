@@ -30,7 +30,7 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/images/logo.png
+    - assets/images/logo.jpeg
     - assets/images/app_icon.jpeg
 
 flutter_icons:
