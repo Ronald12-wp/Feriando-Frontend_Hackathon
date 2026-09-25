@@ -27,7 +27,7 @@ class ApiClient {
   static String get baseUrl {
     const env = String.fromEnvironment(
       'API_BASE_URL',
-      defaultValue: 'http://192.168.0.12:5080/api',
+      defaultValue: 'http://192.168.100.10:5080/api',
     );
     // Si estamos en un emulador Android y la URL apunta a localhost,
     // reescribimos el host a 10.0.2.2. No debemos cambiar IPs de la LAN
