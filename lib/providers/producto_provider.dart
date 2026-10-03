@@ -58,22 +58,30 @@ class ProductoProvider extends ChangeNotifier {
     final creado = await _service.crear(formulario);
     misProductos.insert(0, creado);
     notifyListeners();
+    await cargarCatalogo();
     return creado;
   }
 
   Future<void> actualizar(int id, ProductoFormulario formulario) async {
     await _service.actualizar(id, formulario);
-    await cargarMios();
+    await Future.wait([
+      cargarMios(),
+      cargarCatalogo(),
+    ]);
   }
 
   Future<void> eliminar(int id) async {
     await _service.eliminar(id);
     misProductos.removeWhere((p) => p.productoID == id);
     notifyListeners();
+    await cargarCatalogo();
   }
 
   Future<void> cambiarEstado(int id, String nuevoEstado) async {
     await _service.cambiarEstado(id, nuevoEstado);
-    await cargarMios();
+    await Future.wait([
+      cargarMios(),
+      cargarCatalogo(),
+    ]);
   }
 }

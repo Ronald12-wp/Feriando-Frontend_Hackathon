@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart';
+import 'providers/chat_provider.dart';
 import 'providers/language_provider.dart';
 import 'providers/producto_provider.dart';
 import 'providers/trueque_provider.dart';
@@ -20,6 +21,7 @@ class FeriandoApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => ChatProvider()),
         ChangeNotifierProvider(create: (_) => ProductoProvider()),
         ChangeNotifierProvider(create: (_) => TruequeProvider()),
         ChangeNotifierProvider(create: (_) => LanguageProvider()),

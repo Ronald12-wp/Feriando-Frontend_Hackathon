@@ -16,8 +16,10 @@ class Producto {
   final List<String> imagenes;
   final int usuarioID;
   final String nombreProductora;
+  final int? municipioID;
   final String municipio;
   final String departamento;
+  final String? direccionExacta;
 
   String get imagenPrincipalUrl => imagenes.isNotEmpty ? imagenUrl(0) : '';
 
@@ -53,8 +55,10 @@ class Producto {
     required this.imagenes,
     required this.usuarioID,
     required this.nombreProductora,
+    this.municipioID,
     required this.municipio,
     required this.departamento,
+    this.direccionExacta,
   });
 
   factory Producto.fromJson(Map<String, dynamic> json) => Producto(
@@ -74,8 +78,10 @@ class Producto {
             .toList(),
         usuarioID: json['usuarioID'],
         nombreProductora: json['nombreProductora'] ?? '',
+        municipioID: json['municipioID'] is num ? (json['municipioID'] as num).toInt() : null,
         municipio: json['municipio'] ?? '',
         departamento: json['departamento'] ?? '',
+        direccionExacta: json['direccionExacta'],
       );
 }
 

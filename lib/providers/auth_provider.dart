@@ -71,14 +71,22 @@ class AuthProvider extends ChangeNotifier {
     required String apellidos,
     required String telefono,
     String? correo,
+    String? genero,
+    int? municipioID,
     required String direccionExacta,
+    int? idiomaPreferidoID,
+    bool? esProductora,
   }) async {
     usuario = await _authService.actualizarPerfil(
       nombres: nombres,
       apellidos: apellidos,
       telefono: telefono,
       correo: correo,
+      genero: genero,
+      municipioID: municipioID,
       direccionExacta: direccionExacta,
+      idiomaPreferidoID: idiomaPreferidoID,
+      esProductora: esProductora,
     );
     notifyListeners();
   }
