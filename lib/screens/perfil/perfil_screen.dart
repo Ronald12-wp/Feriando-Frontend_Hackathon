@@ -35,13 +35,17 @@ class _PerfilScreenState extends State<PerfilScreen> {
         if (!mounted) return;
         final scaffoldMessenger = ScaffoldMessenger.of(context);
         scaffoldMessenger.showSnackBar(
-          SnackBar(content: Text(languageProvider.translate('profile_photo_updated'))),
+          SnackBar(
+              content:
+                  Text(languageProvider.translate('profile_photo_updated'))),
         );
       } catch (e) {
         if (!mounted) return;
         final scaffoldMessenger = ScaffoldMessenger.of(context);
         scaffoldMessenger.showSnackBar(
-          SnackBar(content: Text('${languageProvider.translate('profile_error')}$e')),
+          SnackBar(
+              content:
+                  Text('${languageProvider.translate('profile_error')}$e')),
         );
       } finally {
         if (mounted) setState(() => _cargandoFoto = false);
@@ -63,7 +67,9 @@ class _PerfilScreenState extends State<PerfilScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text(context.watch<LanguageProvider>().translate('profile_title'))),
+      appBar: AppBar(
+          title: Text(
+              context.watch<LanguageProvider>().translate('profile_title'))),
       body: usuario == null
           ? const SizedBox.shrink()
           : ListView(
@@ -74,17 +80,20 @@ class _PerfilScreenState extends State<PerfilScreen> {
                     children: [
                       Stack(
                         children: [
-                          usuario.fotoPerfil != null && usuario.fotoPerfil!.isNotEmpty
+                          usuario.fotoPerfil != null &&
+                                  usuario.fotoPerfil!.isNotEmpty
                               ? CircleAvatar(
                                   radius: 44,
-                                  backgroundImage: NetworkImage(usuario.fotoPerfil!),
+                                  backgroundImage:
+                                      NetworkImage(usuario.fotoPerfil!),
                                 )
                               : CircleAvatar(
                                   radius: 44,
                                   backgroundColor: AppColors.verdeMilpa,
                                   child: Text(
                                     usuario.iniciales,
-                                    style: AppTextStyles.h1.copyWith(color: Colors.white),
+                                    style: AppTextStyles.h1
+                                        .copyWith(color: Colors.white),
                                   ),
                                 ),
                           Positioned(
@@ -97,14 +106,17 @@ class _PerfilScreenState extends State<PerfilScreen> {
                                 decoration: BoxDecoration(
                                   color: AppColors.verdeMilpa,
                                   shape: BoxShape.circle,
-                                  border: Border.all(color: Colors.white, width: 2),
+                                  border:
+                                      Border.all(color: Colors.white, width: 2),
                                 ),
                                 child: _cargandoFoto
                                     ? const SizedBox(
                                         width: 20,
                                         height: 20,
                                         child: CircularProgressIndicator(
-                                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                  Colors.white),
                                           strokeWidth: 2,
                                         ),
                                       )
@@ -133,7 +145,8 @@ class _PerfilScreenState extends State<PerfilScreen> {
                             const SizedBox(width: 4),
                             Text(
                               ubicacionGeografica,
-                              style: AppTextStyles.cuerpo.copyWith(color: AppColors.textoSecundario),
+                              style: AppTextStyles.cuerpo
+                                  .copyWith(color: AppColors.textoSecundario),
                             ),
                           ],
                         ),
@@ -142,26 +155,70 @@ class _PerfilScreenState extends State<PerfilScreen> {
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.star, color: AppColors.achiote, size: 18),
+                          const Icon(Icons.star,
+                              color: AppColors.achiote, size: 18),
                           const SizedBox(width: 4),
                           Text(
                             usuario.promedioValoracion.toStringAsFixed(1),
                             style: AppTextStyles.cuerpoDestacado,
                           ),
-                          Text('${usuario.promedioValoracion.toStringAsFixed(1)}${languageProvider.translate('profile_trust')}', style: AppTextStyles.caption),
+                          Text(
+                              '${usuario.promedioValoracion.toStringAsFixed(1)}${languageProvider.translate('profile_trust')}',
+                              style: AppTextStyles.caption),
                         ],
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 28),
-                _filaInfo(Icons.phone_outlined, languageProvider.translate('profile_phone'), usuario.telefono),
+                _filaInfo(
+                    Icons.phone_outlined,
+                    languageProvider.translate('profile_phone'),
+                    usuario.telefono),
                 if (usuario.correo != null && usuario.correo!.isNotEmpty)
-                  _filaInfo(Icons.mail_outline, languageProvider.translate('profile_email'), usuario.correo!),
+                  _filaInfo(
+                      Icons.mail_outline,
+                      languageProvider.translate('profile_email'),
+                      usuario.correo!),
+                if (usuario.genero != null && usuario.genero!.isNotEmpty)
+                  _filaInfo(
+                    Icons.person_outline,
+                    languageProvider.translate('profile_gender'),
+                    usuario.genero == 'F'
+                        ? languageProvider.translate('register_female')
+                        : usuario.genero == 'M'
+                            ? languageProvider.translate('register_male')
+                            : languageProvider
+                                .translate('profile_gender_other'),
+                  ),
                 if (usuario.departamento != null)
-                  _filaInfo(Icons.map_outlined, languageProvider.translate('profile_department'), usuario.departamento!),
+                  _filaInfo(
+                      Icons.map_outlined,
+                      languageProvider.translate('profile_department'),
+                      usuario.departamento!),
                 if (usuario.municipio != null)
-                  _filaInfo(Icons.location_city_outlined, languageProvider.translate('profile_municipality'), usuario.municipio!),
+                  _filaInfo(
+                      Icons.location_city_outlined,
+                      languageProvider.translate('profile_municipality'),
+                      usuario.municipio!),
+                if (usuario.direccionExacta != null &&
+                    usuario.direccionExacta!.isNotEmpty)
+                  _filaInfo(
+                    Icons.home_outlined,
+                    languageProvider.translate('register_exact_address'),
+                    usuario.direccionExacta!,
+                  ),
+                if (usuario.idiomaPreferidoID != null)
+                  _filaInfo(
+                    Icons.language,
+                    languageProvider.translate('profile_language'),
+                    LanguageProvider.supportedLanguages
+                            .where((idioma) =>
+                                idioma.idiomaID == usuario.idiomaPreferidoID)
+                            .firstOrNull
+                            ?.nombre ??
+                        languageProvider.selectedLanguage.nombre,
+                  ),
                 _filaInfo(
                   Icons.storefront_outlined,
                   languageProvider.translate('profile_edit'),
@@ -178,7 +235,9 @@ class _PerfilScreenState extends State<PerfilScreen> {
                     ),
                   ),
                   icon: const Icon(Icons.edit),
-                  label: Text(context.watch<LanguageProvider>().translate('profile_edit')),
+                  label: Text(context
+                      .watch<LanguageProvider>()
+                      .translate('profile_edit')),
                   style: FilledButton.styleFrom(
                     backgroundColor: AppColors.verdeMilpa,
                     padding: const EdgeInsets.symmetric(vertical: 14),
@@ -188,10 +247,13 @@ class _PerfilScreenState extends State<PerfilScreen> {
                 FilledButton.icon(
                   onPressed: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const IdiomaSelectorScreen()),
+                    MaterialPageRoute(
+                        builder: (_) => const IdiomaSelectorScreen()),
                   ),
                   icon: const Icon(Icons.language),
-                  label: Text(context.watch<LanguageProvider>().translate('profile_language')),
+                  label: Text(context
+                      .watch<LanguageProvider>()
+                      .translate('profile_language')),
                   style: FilledButton.styleFrom(
                     backgroundColor: AppColors.verdeMilpa,
                     padding: const EdgeInsets.symmetric(vertical: 14),
@@ -201,7 +263,11 @@ class _PerfilScreenState extends State<PerfilScreen> {
                 OutlinedButton.icon(
                   onPressed: () => context.read<AuthProvider>().logout(),
                   icon: const Icon(Icons.logout, color: AppColors.error),
-                  label: Text(context.watch<LanguageProvider>().translate('profile_logout'), style: const TextStyle(color: AppColors.error)),
+                  label: Text(
+                      context
+                          .watch<LanguageProvider>()
+                          .translate('profile_logout'),
+                      style: const TextStyle(color: AppColors.error)),
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: AppColors.error),
                   ),

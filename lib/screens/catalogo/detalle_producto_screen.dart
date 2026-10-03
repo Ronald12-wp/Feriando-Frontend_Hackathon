@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/producto.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/chat_provider.dart';
 import '../../providers/language_provider.dart';
+import '../../services/chat_service.dart';
 import '../../services/producto_service.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/estado_badge.dart';
+import '../chat/chat_screen.dart';
 import '../trueques/solicitar_trueque_screen.dart';
 
 class DetalleProductoScreen extends StatefulWidget {
@@ -180,14 +183,45 @@ class _DetalleProductoScreenState extends State<DetalleProductoScreen> {
                       if (_producto!.estado == 'Disponible' && _producto!.usuarioID != usuarioActualID)
                         Padding(
                           padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                          child: AppButton(
-                            texto: lang.translate('request_swap'),
-                            icono: Icons.sync_alt,
-                            onPressed: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => SolicitarTruequeScreen(productoDeseado: _producto!),
+                          child: Column(
+                            children: [
+                              AppButton(
+                                texto: lang.translate('chat_start'),
+                                icono: Icons.chat_bubble_outline,
+                                onPressed: usuarioActualID == null
+                                    ? null
+                                    : () {
+                                        final chatId = ChatService.crearChatId(
+                                          productoId: _producto!.productoID,
+                                          productorId: _producto!.usuarioID,
+                                          otroUsuarioId: usuarioActualID,
+                                        );
+                                        context
+                                            .read<ChatProvider>()
+                                            .restaurarConversacion(chatId);
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (_) => ChatScreen(
+                                              chatId: chatId,
+                                              usuarioActualId: usuarioActualID,
+                                              nombreContacto:
+                                                  _producto!.nombreProductora,
+                                            ),
+                                          ),
+                                        );
+                                      },
                               ),
-                            ),
+                              const SizedBox(height: 12),
+                              AppButton(
+                                texto: lang.translate('request_swap'),
+                                icono: Icons.sync_alt,
+                                onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => SolicitarTruequeScreen(productoDeseado: _producto!),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                     ],

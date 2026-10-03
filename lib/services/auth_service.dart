@@ -53,19 +53,32 @@ class AuthService {
     required String apellidos,
     required String telefono,
     String? correo,
+    String? genero,
+    int? municipioID,
     required String direccionExacta,
+    int? idiomaPreferidoID,
+    bool? esProductora,
   }) async {
-    final data = await _api.put(
+    await _api.put(
       '/usuarios/perfil',
       {
         'nombres': nombres,
         'apellidos': apellidos,
         'telefono': telefono,
         'correo': correo,
+        'genero': genero,
+        'municipioID': municipioID,
         'direccionExacta': direccionExacta,
+        'idiomaPreferidoID': idiomaPreferidoID,
+        'esProductora': esProductora,
       },
     );
 
+    return obtenerPerfil();
+  }
+
+  Future<Usuario> obtenerPerfil() async {
+    final data = await _api.get('/usuarios/perfil');
     final usuario = Usuario.fromJson(data);
     await SessionService.guardarUsuario(usuario);
     return usuario;
