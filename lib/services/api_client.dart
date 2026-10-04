@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
 import 'session_service.dart';
 
@@ -20,34 +20,42 @@ class ApiException implements Exception {
 
 class ApiClient {
   /// Dirección de la API.
-  ///
-  /// Para usar otra red sin editar código, ejecuta Flutter con:
-  /// `--dart-define=API_BASE_URL=http://TU_IP:5080/api`
-  /// La IP por defecto corresponde a la red configurada actualmente.
   static String get baseUrl {
     const env = String.fromEnvironment(
       'API_BASE_URL',
       defaultValue: 'http://192.168.100.10:5080/api',
     );
-    // Si estamos en un emulador Android y la URL apunta a localhost,
-    // reescribimos el host a 10.0.2.2. No debemos cambiar IPs de la LAN
-    // porque un dispositivo físico puede acceder a ellas directamente.
     try {
       final uri = Uri.parse(env);
       if (Platform.isAndroid &&
           (uri.host == 'localhost' || uri.host == '127.0.0.1')) {
         return '${uri.scheme}://10.0.2.2:${uri.port}${uri.path}';
       }
-    } catch (_) {
-      // Si algo falla, devolvemos la URL tal cual
-    }
+    } catch (_) {}
     if (kDebugMode) {
       try {
-        // ignore: avoid_print
         print('[ApiClient] baseUrl resolved to: $env');
       } catch (_) {}
     }
     return env;
+  }
+
+  /// Ayudante para inferir el MediaType adecuado según la extensión del archivo.
+  MediaType _obtenerMediaType(String path) {
+    final extension = path.split('.').last.toLowerCase();
+    switch (extension) {
+      case 'png':
+        return MediaType('image', 'png');
+      case 'jpg':
+      case 'jpeg':
+        return MediaType('image', 'jpeg');
+      case 'gif':
+        return MediaType('image', 'gif');
+      case 'webp':
+        return MediaType('image', 'webp');
+      default:
+        return MediaType('image', 'jpeg');
+    }
   }
 
   Future<Map<String, String>> _headers(
@@ -150,8 +158,12 @@ class ApiClient {
       }
       if (files != null) {
         for (var file in files) {
-          final multipartFile =
-              await http.MultipartFile.fromPath(fileFieldName, file.path);
+          final contentType = _obtenerMediaType(file.path);
+          final multipartFile = await http.MultipartFile.fromPath(
+            fileFieldName,
+            file.path,
+            contentType: contentType,
+          );
           request.files.add(multipartFile);
         }
       }
@@ -183,8 +195,12 @@ class ApiClient {
       }
       if (files != null) {
         for (var file in files) {
-          final multipartFile =
-              await http.MultipartFile.fromPath(fileFieldName, file.path);
+          final contentType = _obtenerMediaType(file.path);
+          final multipartFile = await http.MultipartFile.fromPath(
+            fileFieldName,
+            file.path,
+            contentType: contentType,
+          );
           request.files.add(multipartFile);
         }
       }

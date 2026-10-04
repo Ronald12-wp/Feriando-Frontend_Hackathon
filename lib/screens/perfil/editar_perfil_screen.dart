@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../../models/usuario.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/language_provider.dart';
+import '../../services/api_client.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 
@@ -33,10 +34,13 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
   void initState() {
     super.initState();
     _nombresController = TextEditingController(text: widget.usuario.nombres);
-    _apellidosController = TextEditingController(text: widget.usuario.apellidos);
+    _apellidosController =
+        TextEditingController(text: widget.usuario.apellidos);
     _telefonoController = TextEditingController(text: widget.usuario.telefono);
-    _correoController = TextEditingController(text: widget.usuario.correo ?? '');
-    _direccionController = TextEditingController(text: widget.usuario.direccionExacta ?? '');
+    _correoController =
+        TextEditingController(text: widget.usuario.correo ?? '');
+    _direccionController =
+        TextEditingController(text: widget.usuario.direccionExacta ?? '');
   }
 
   @override
@@ -60,9 +64,20 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
     }
   }
 
+  String? _obtenerUrlFotoPerfil(String? fotoPerfil) {
+    if (fotoPerfil == null || fotoPerfil.isEmpty) return null;
+    if (fotoPerfil.startsWith('http://') || fotoPerfil.startsWith('https://')) {
+      return fotoPerfil;
+    }
+
+    final hostBase = ApiClient.baseUrl.replaceAll('/api', '');
+    return '$hostBase$fotoPerfil';
+  }
+
   Future<void> _guardarCambios() async {
     final lang = context.read<LanguageProvider>();
-    if (_nombresController.text.isEmpty || _apellidosController.text.isEmpty) {
+    if (_nombresController.text.trim().isEmpty ||
+        _apellidosController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(lang.translate('edit_profile_error_fields'))),
       );
@@ -71,30 +86,31 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
 
     setState(() => _cargando = true);
     final authProvider = context.read<AuthProvider>();
+
     try {
       await authProvider.actualizarPerfil(
-            nombres: _nombresController.text.trim(),
-            apellidos: _apellidosController.text.trim(),
-            telefono: _telefonoController.text.trim(),
-            correo: _correoController.text.trim().isEmpty ? null : _correoController.text.trim(),
-            direccionExacta: _direccionController.text.trim(),
-          );
+        nombres: _nombresController.text.trim(),
+        apellidos: _apellidosController.text.trim(),
+        telefono: _telefonoController.text.trim(),
+        correo: _correoController.text.trim().isEmpty
+            ? null
+            : _correoController.text.trim(),
+        direccionExacta: _direccionController.text.trim(),
+      );
 
       if (_imagenSeleccionada != null) {
         await authProvider.actualizarFotoPerfil(_imagenSeleccionada!);
       }
 
       if (!mounted) return;
-      final messenger = ScaffoldMessenger.of(context);
-      messenger.showSnackBar(
-        SnackBar(content: Text(context.read<LanguageProvider>().translate('edit_profile_saved'))),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(lang.translate('edit_profile_saved'))),
       );
       Navigator.of(context).pop(true);
     } catch (e) {
       if (!mounted) return;
-      final messenger = ScaffoldMessenger.of(context);
-      messenger.showSnackBar(
-        SnackBar(content: Text('${context.read<LanguageProvider>().translate('profile_error')}$e')),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${lang.translate('profile_error')}: $e')),
       );
     } finally {
       if (mounted) setState(() => _cargando = false);
@@ -103,8 +119,11 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = context.watch<LanguageProvider>();
+    final urlFotoServidor = _obtenerUrlFotoPerfil(widget.usuario.fotoPerfil);
+
     return Scaffold(
-      appBar: AppBar(title: Text(context.watch<LanguageProvider>().translate('edit_profile_title'))),
+      appBar: AppBar(title: Text(lang.translate('edit_profile_title'))),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
@@ -112,27 +131,26 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
           Center(
             child: Stack(
               children: [
-                _imagenSeleccionada != null
-                    ? CircleAvatar(
-                        radius: 50,
-                        backgroundImage: FileImage(
-                          File(_imagenSeleccionada!),
-                        ),
-                      )
-                    : (widget.usuario.fotoPerfil != null &&
-                            widget.usuario.fotoPerfil!.isNotEmpty
-                        ? CircleAvatar(
-                            radius: 50,
-                            backgroundImage: NetworkImage(widget.usuario.fotoPerfil!),
-                          )
-                        : CircleAvatar(
-                            radius: 50,
-                            backgroundColor: AppColors.verdeMilpa,
-                            child: Text(
-                              widget.usuario.iniciales,
-                              style: AppTextStyles.h1.copyWith(color: Colors.white),
-                            ),
-                          )),
+                if (_imagenSeleccionada != null)
+                  CircleAvatar(
+                    radius: 50,
+                    backgroundImage: FileImage(File(_imagenSeleccionada!)),
+                  )
+                else if (urlFotoServidor != null)
+                  CircleAvatar(
+                    radius: 50,
+                    backgroundImage: NetworkImage(urlFotoServidor),
+                    onBackgroundImageError: (_, __) {},
+                  )
+                else
+                  CircleAvatar(
+                    radius: 50,
+                    backgroundColor: AppColors.verdeMilpa,
+                    child: Text(
+                      widget.usuario.iniciales,
+                      style: AppTextStyles.h1.copyWith(color: Colors.white),
+                    ),
+                  ),
                 Positioned(
                   bottom: 0,
                   right: 0,
@@ -160,7 +178,7 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
 
           // Nombres
           _buildTextField(
-            label: context.watch<LanguageProvider>().translate('edit_profile_names'),
+            label: lang.translate('edit_profile_names'),
             controller: _nombresController,
             enabled: !_cargando,
           ),
@@ -168,7 +186,7 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
 
           // Apellidos
           _buildTextField(
-            label: context.watch<LanguageProvider>().translate('edit_profile_lastnames'),
+            label: lang.translate('edit_profile_lastnames'),
             controller: _apellidosController,
             enabled: !_cargando,
           ),
@@ -176,7 +194,7 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
 
           // Teléfono
           _buildTextField(
-            label: context.watch<LanguageProvider>().translate('edit_profile_phone'),
+            label: lang.translate('edit_profile_phone'),
             controller: _telefonoController,
             enabled: !_cargando,
             keyboardType: TextInputType.phone,
@@ -185,7 +203,7 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
 
           // Correo
           _buildTextField(
-            label: context.watch<LanguageProvider>().translate('edit_profile_email'),
+            label: lang.translate('edit_profile_email'),
             controller: _correoController,
             enabled: !_cargando,
             keyboardType: TextInputType.emailAddress,
@@ -194,7 +212,7 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
 
           // Dirección
           _buildTextField(
-            label: context.watch<LanguageProvider>().translate('edit_profile_address'),
+            label: lang.translate('edit_profile_address'),
             controller: _direccionController,
             enabled: !_cargando,
             maxLines: 2,
@@ -217,7 +235,7 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
                       strokeWidth: 2,
                     ),
                   )
-                : Text(context.watch<LanguageProvider>().translate('edit_profile_save_changes')),
+                : Text(lang.translate('edit_profile_save_changes')),
           ),
         ],
       ),
