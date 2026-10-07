@@ -193,6 +193,17 @@ class _PerfilScreenState extends State<PerfilScreen> {
                       Icons.mail_outline,
                       languageProvider.translate('profile_email'),
                       usuario.correo!),
+                if (usuario.genero != null && usuario.genero!.isNotEmpty)
+                  _filaInfo(
+                    Icons.person_outline,
+                    languageProvider.translate('profile_gender'),
+                    usuario.genero == 'F'
+                        ? languageProvider.translate('register_female')
+                        : usuario.genero == 'M'
+                            ? languageProvider.translate('register_male')
+                            : languageProvider
+                                .translate('profile_gender_other'),
+                  ),
                 if (usuario.departamento != null)
                   _filaInfo(
                       Icons.map_outlined,
@@ -203,6 +214,24 @@ class _PerfilScreenState extends State<PerfilScreen> {
                       Icons.location_city_outlined,
                       languageProvider.translate('profile_municipality'),
                       usuario.municipio!),
+                if (usuario.direccionExacta != null &&
+                    usuario.direccionExacta!.isNotEmpty)
+                  _filaInfo(
+                    Icons.home_outlined,
+                    languageProvider.translate('register_exact_address'),
+                    usuario.direccionExacta!,
+                  ),
+                if (usuario.idiomaPreferidoID != null)
+                  _filaInfo(
+                    Icons.language,
+                    languageProvider.translate('profile_language'),
+                    LanguageProvider.supportedLanguages
+                            .where((idioma) =>
+                                idioma.idiomaID == usuario.idiomaPreferidoID)
+                            .firstOrNull
+                            ?.nombre ??
+                        languageProvider.selectedLanguage.nombre,
+                  ),
                 _filaInfo(
                   Icons.storefront_outlined,
                   languageProvider.translate('profile_edit'),

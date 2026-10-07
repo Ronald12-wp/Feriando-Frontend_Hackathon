@@ -80,7 +80,7 @@ class _PublicarProductoScreenState extends State<PublicarProductoScreen> {
     _descripcion.text = p.descripcion ?? '';
     _cantidad.text = p.cantidad.toString();
     _precio.text = p.precioReferencial?.toString() ?? '';
-    _direccionExacta.text = '';
+    _direccionExacta.text = p.direccionExacta ?? '';
     _tipoOferta = p.tipoOferta;
     _imagenesOriginales = List<String>.from(p.imagenes);
     _imagenesActuales.addAll(_imagenesOriginales);
@@ -106,12 +106,20 @@ class _PublicarProductoScreenState extends State<PublicarProductoScreen> {
               unidades.where((u) => u.nombre == p.unidadMedida).firstOrNull;
 
           _departamentoSeleccionado = departamentos
-              .where((d) => d.nombre == p.departamento)
+              .where((d) => d.municipios.any(
+                    (municipio) =>
+                        municipio.municipioID == p.municipioID ||
+                        (p.municipioID == null &&
+                            municipio.nombre == p.municipio &&
+                            d.nombre == p.departamento),
+                  ))
               .firstOrNull;
           if (_departamentoSeleccionado != null) {
             _municipiosDisponibles = _departamentoSeleccionado!.municipios;
             _municipioSeleccionado = _municipiosDisponibles
-                .where((m) => m.nombre == p.municipio)
+                .where((m) =>
+                    m.municipioID == p.municipioID ||
+                    (p.municipioID == null && m.nombre == p.municipio))
                 .firstOrNull;
           }
         }

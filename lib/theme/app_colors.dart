@@ -6,10 +6,12 @@ class AppColors {
   static const Color verdeMilpa = Color(0xFF1F5D3A);
   static const Color verdeFresco = Color(0xFF6FAE3E);
   static const Color naranjaFeria = Color(0xFFE8702A);
-  static const Color rojoTomate = Color.fromARGB(255, 214, 155, 150);
+  static const Color rojoTomate = Color.fromARGB(255, 187, 64, 53);
   static const Color amarilloMaiz = Color(0xFFF5B720);
   static const Color cremaTortilla = Color(0xFFFBF3E4);
   static const Color cafeTierra = Color(0xFF4A2E1F);
+  static const Color mensajeriaAzul = Color(0xFF0866FF);
+  static const Color insigniaNoLeido = Color(0xFFE53935);
 
   static const Color fondo = cremaTortilla;
   static const Color superficie = Colors.white;
