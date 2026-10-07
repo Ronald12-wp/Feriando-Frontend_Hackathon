@@ -27,10 +27,10 @@ class _RegistroScreenState extends State<RegistroScreen> {
   final _password = TextEditingController();
 
   final CatalogoService _catalogoService = CatalogoService();
-  
+
   List<Departamento> _departamentos = [];
   Departamento? _departamentoSeleccionado;
-  
+
   List<Municipio> _municipiosDisponibles = [];
   Municipio? _municipioSeleccionado;
 
@@ -82,7 +82,9 @@ class _RegistroScreenState extends State<RegistroScreen> {
     if (!_formKey.currentState!.validate()) return;
     if (_municipioSeleccionado == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(languageProvider.translate('register_select_municipio'))),
+        SnackBar(
+            content:
+                Text(languageProvider.translate('register_select_municipio'))),
       );
       return;
     }
@@ -104,7 +106,9 @@ class _RegistroScreenState extends State<RegistroScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(e is ApiException ? e.mensaje : languageProvider.translate('login_error')),
+            content: Text(e is ApiException
+                ? e.mensaje
+                : languageProvider.translate('login_error')),
           ),
         );
       }
@@ -127,20 +131,26 @@ class _RegistroScreenState extends State<RegistroScreen> {
               AppTextField(
                 etiqueta: languageProvider.translate('register_names'),
                 controller: _nombres,
-                validador: (v) => (v == null || v.trim().isEmpty) ? '${languageProvider.translate('register_names')} es requerido' : null,
+                validador: (v) => (v == null || v.trim().isEmpty)
+                    ? '${languageProvider.translate('register_names')} es requerido'
+                    : null,
               ),
               const SizedBox(height: 14),
               AppTextField(
                 etiqueta: languageProvider.translate('register_lastnames'),
                 controller: _apellidos,
-                validador: (v) => (v == null || v.trim().isEmpty) ? '${languageProvider.translate('register_lastnames')} es requerido' : null,
+                validador: (v) => (v == null || v.trim().isEmpty)
+                    ? '${languageProvider.translate('register_lastnames')} es requerido'
+                    : null,
               ),
               const SizedBox(height: 14),
               AppTextField(
                 etiqueta: languageProvider.translate('register_phone'),
                 controller: _telefono,
                 tipoTeclado: TextInputType.phone,
-                validador: (v) => (v == null || v.trim().isEmpty) ? '${languageProvider.translate('register_phone')} es requerido' : null,
+                validador: (v) => (v == null || v.trim().isEmpty)
+                    ? '${languageProvider.translate('register_phone')} es requerido'
+                    : null,
               ),
               const SizedBox(height: 14),
               AppTextField(
@@ -158,7 +168,6 @@ class _RegistroScreenState extends State<RegistroScreen> {
                     : null,
               ),
               const SizedBox(height: 14),
-              
               if (_cargandoCatalogos)
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 12),
@@ -168,48 +177,69 @@ class _RegistroScreenState extends State<RegistroScreen> {
                 // Dropdown 1: Departamento
                 DropdownButtonFormField<Departamento>(
                   initialValue: _departamentoSeleccionado,
-                  decoration: InputDecoration(labelText: languageProvider.translate('register_department')),
+                  isExpanded: true,
+                  menuMaxHeight: 220,
+                  decoration: InputDecoration(
+                      labelText:
+                          languageProvider.translate('register_department')),
                   items: _departamentos
-                      .map((d) => DropdownMenuItem(value: d, child: Text(d.nombre)))
+                      .map((d) =>
+                          DropdownMenuItem(value: d, child: Text(d.nombre)))
                       .toList(),
                   onChanged: _onDepartamentoChanged,
-                  validator: (v) => v == null ? languageProvider.translate('register_select_department') : null,
+                  validator: (v) => v == null
+                      ? languageProvider.translate('register_select_department')
+                      : null,
                 ),
                 const SizedBox(height: 14),
 
                 // Dropdown 2: Municipio (en cascada)
                 DropdownButtonFormField<Municipio>(
                   initialValue: _municipioSeleccionado,
-                  decoration: InputDecoration(labelText: languageProvider.translate('register_municipality')),
+                  isExpanded: true,
+                  menuMaxHeight: 220,
+                  decoration: InputDecoration(
+                      labelText:
+                          languageProvider.translate('register_municipality')),
                   items: _municipiosDisponibles
-                      .map((m) => DropdownMenuItem(value: m, child: Text(m.nombre)))
+                      .map((m) =>
+                          DropdownMenuItem(value: m, child: Text(m.nombre)))
                       .toList(),
                   onChanged: _departamentoSeleccionado == null
                       ? null
                       : (v) => setState(() => _municipioSeleccionado = v),
-                  validator: (v) => v == null ? languageProvider.translate('register_select_municipio') : null,
+                  validator: (v) => v == null
+                      ? languageProvider.translate('register_select_municipio')
+                      : null,
                 ),
                 const SizedBox(height: 14),
 
                 // Dirección Exacta
                 AppTextField(
-                  etiqueta: languageProvider.translate('register_exact_address'),
+                  etiqueta:
+                      languageProvider.translate('register_exact_address'),
                   controller: _direccionExacta,
                   validador: (v) => (v == null || v.trim().isEmpty)
                       ? '${languageProvider.translate('register_exact_address')} es requerido'
                       : null,
                 ),
                 const SizedBox(height: 14),
-
               ],
-
               const SizedBox(height: 14),
-              Text(languageProvider.translate('register_gender'), style: AppTextStyles.etiqueta),
+              Text(languageProvider.translate('register_gender'),
+                  style: AppTextStyles.etiqueta),
               Row(
                 children: [
-                  ChoiceChip(label: Text(languageProvider.translate('register_female')), selected: _genero == 'F', onSelected: (_) => setState(() => _genero = 'F')),
+                  ChoiceChip(
+                      label:
+                          Text(languageProvider.translate('register_female')),
+                      selected: _genero == 'F',
+                      onSelected: (_) => setState(() => _genero = 'F')),
                   const SizedBox(width: 8),
-                  ChoiceChip(label: Text(languageProvider.translate('register_male')), selected: _genero == 'M', onSelected: (_) => setState(() => _genero = 'M')),
+                  ChoiceChip(
+                      label: Text(languageProvider.translate('register_male')),
+                      selected: _genero == 'M',
+                      onSelected: (_) => setState(() => _genero = 'M')),
                 ],
               ),
               const SizedBox(height: 8),
@@ -218,11 +248,16 @@ class _RegistroScreenState extends State<RegistroScreen> {
                 value: _esProductora,
                 onChanged: (v) => setState(() => _esProductora = v),
                 activeThumbColor: AppColors.verdeMilpa,
-                title: Text(languageProvider.translate('register_publish_swap')),
-                subtitle: Text(languageProvider.translate('register_publish_swap_subtitle')),
+                title:
+                    Text(languageProvider.translate('register_publish_swap')),
+                subtitle: Text(languageProvider
+                    .translate('register_publish_swap_subtitle')),
               ),
               const SizedBox(height: 24),
-              AppButton(texto: languageProvider.translate('register_create_account'), onPressed: _registrar, cargando: _cargando),
+              AppButton(
+                  texto: languageProvider.translate('register_create_account'),
+                  onPressed: _registrar,
+                  cargando: _cargando),
               const SizedBox(height: 24),
             ],
           ),

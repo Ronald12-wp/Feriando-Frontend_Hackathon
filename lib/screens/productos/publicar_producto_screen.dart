@@ -484,6 +484,7 @@ class _PublicarProductoScreenState extends State<PublicarProductoScreen> {
                               child: DropdownButtonFormField<Departamento>(
                                 initialValue: _departamentoSeleccionado,
                                 isExpanded: true,
+                                menuMaxHeight: 220,
                                 decoration: InputDecoration(
                                     labelText:
                                         lang.translate('catalog_department')),
@@ -499,6 +500,7 @@ class _PublicarProductoScreenState extends State<PublicarProductoScreen> {
                               child: DropdownButtonFormField<Municipio>(
                                 initialValue: _municipioSeleccionado,
                                 isExpanded: true,
+                                menuMaxHeight: 220,
                                 decoration: InputDecoration(
                                     labelText:
                                         lang.translate('catalog_municipality')),

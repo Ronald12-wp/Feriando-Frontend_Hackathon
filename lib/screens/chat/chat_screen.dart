@@ -123,10 +123,10 @@ class _ChatScreenState extends State<ChatScreen> {
       appBar: AppBar(
         title: Row(
           children: [
-            CircleAvatar(
+            const CircleAvatar(
               radius: 18,
               backgroundColor: AppColors.verdeMilpaSuave,
-              child: const Icon(Icons.person, color: AppColors.verdeMilpa),
+              child: Icon(Icons.person, color: AppColors.verdeMilpa),
             ),
             const SizedBox(width: 10),
             Expanded(
@@ -224,7 +224,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 SafeArea(
                   child: Container(
                     padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: AppColors.superficie,
                       border: Border(top: BorderSide(color: AppColors.borde)),
                     ),
@@ -239,9 +239,9 @@ class _ChatScreenState extends State<ChatScreen> {
                               hintText: lang.translate('chat_message_hint'),
                               filled: true,
                               fillColor: AppColors.cremaTortilla,
-                              contentPadding: EdgeInsets.symmetric(
+                              contentPadding: const EdgeInsets.symmetric(
                                   horizontal: 16, vertical: 12),
-                              border: OutlineInputBorder(
+                              border: const OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(20)),
                                 borderSide: BorderSide.none,

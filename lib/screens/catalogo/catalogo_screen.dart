@@ -24,7 +24,7 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
   List<Categoria> _categorias = [];
   List<Departamento> _departamentos = [];
   Departamento? _departamentoSeleccionado;
-  
+
   List<Municipio> _municipiosDisponibles = [];
   Municipio? _municipioSeleccionado;
 
@@ -64,7 +64,7 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
       _municipioSeleccionado = null;
       _municipiosDisponibles = dep?.municipios ?? [];
     });
-    
+
     provider.filtroDepartamentoID = dep?.departamentoID;
     provider.filtroMunicipioID = null;
     provider.cargarCatalogo();
@@ -103,12 +103,17 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
         actions: [
           IconButton(
             icon: Icon(
-              _mostrarFiltrosUbicacion ? Icons.filter_alt : Icons.filter_alt_outlined,
-              color: (_departamentoSeleccionado != null) ? AppColors.verdeMilpa : null,
+              _mostrarFiltrosUbicacion
+                  ? Icons.filter_alt
+                  : Icons.filter_alt_outlined,
+              color: (_departamentoSeleccionado != null)
+                  ? AppColors.verdeMilpa
+                  : null,
             ),
             tooltip: lang.translate('catalog_filter_location_tooltip'),
             onPressed: () {
-              setState(() => _mostrarFiltrosUbicacion = !_mostrarFiltrosUbicacion);
+              setState(
+                  () => _mostrarFiltrosUbicacion = !_mostrarFiltrosUbicacion);
             },
           ),
           IconButton(
@@ -165,12 +170,15 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
                           child: DropdownButtonFormField<Departamento>(
                             initialValue: _departamentoSeleccionado,
                             isExpanded: true,
+                            menuMaxHeight: 220,
                             decoration: InputDecoration(
                               labelText: lang.translate('catalog_department'),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 8),
                             ),
                             items: _departamentos
-                                .map((d) => DropdownMenuItem(value: d, child: Text(d.nombre)))
+                                .map((d) => DropdownMenuItem(
+                                    value: d, child: Text(d.nombre)))
                                 .toList(),
                             onChanged: _onDepartamentoChanged,
                           ),
@@ -180,14 +188,19 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
                           child: DropdownButtonFormField<Municipio>(
                             initialValue: _municipioSeleccionado,
                             isExpanded: true,
+                            menuMaxHeight: 220,
                             decoration: InputDecoration(
                               labelText: lang.translate('catalog_municipality'),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 8),
                             ),
                             items: _municipiosDisponibles
-                                .map((m) => DropdownMenuItem(value: m, child: Text(m.nombre)))
+                                .map((m) => DropdownMenuItem(
+                                    value: m, child: Text(m.nombre)))
                                 .toList(),
-                            onChanged: _departamentoSeleccionado == null ? null : _onMunicipioChanged,
+                            onChanged: _departamentoSeleccionado == null
+                                ? null
+                                : _onMunicipioChanged,
                           ),
                         ),
                       ],
@@ -213,8 +226,10 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   children: [
-                    _chipCategoria(context, null, lang.translate('catalog_all')),
-                    ..._categorias.map((c) => _chipCategoria(context, c.categoriaID, c.nombre)),
+                    _chipCategoria(
+                        context, null, lang.translate('catalog_all')),
+                    ..._categorias.map((c) =>
+                        _chipCategoria(context, c.categoriaID, c.nombre)),
                   ],
                 ),
               ),
@@ -248,7 +263,8 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
   Widget _cuerpo(ProductoProvider provider) {
     final lang = context.watch<LanguageProvider>();
     if (provider.cargando && provider.catalogo.isEmpty) {
-      return const Center(child: CircularProgressIndicator(color: AppColors.verdeMilpa));
+      return const Center(
+          child: CircularProgressIndicator(color: AppColors.verdeMilpa));
     }
     if (provider.catalogo.isEmpty) {
       return EmptyState(
@@ -266,7 +282,9 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
         return ProductoCard(
           producto: producto,
           onTap: () => Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => DetalleProductoScreen(productoID: producto.productoID)),
+            MaterialPageRoute(
+                builder: (_) =>
+                    DetalleProductoScreen(productoID: producto.productoID)),
           ),
         );
       },

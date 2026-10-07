@@ -153,6 +153,8 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
 
     setState(() => _cargando = true);
     final authProvider = context.read<AuthProvider>();
+    final languageProvider = context.read<LanguageProvider>();
+    final idiomaSeleccionado = _idiomaSeleccionado!;
     try {
       await authProvider.actualizarPerfil(
         nombres: _nombresController.text.trim(),
@@ -167,7 +169,7 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
         idiomaPreferidoID: _idiomaSeleccionado!.idiomaID,
         esProductora: _esProductora,
       );
-      await context.read<LanguageProvider>().setLanguage(_idiomaSeleccionado!);
+      await languageProvider.setLanguage(idiomaSeleccionado);
 
       if (_imagenSeleccionada != null) {
         await authProvider.actualizarFotoPerfil(_imagenSeleccionada!);

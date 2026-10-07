@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/language_provider.dart';
 import '../../screens/perfil/idioma_selector_screen.dart';
+import '../../services/api_client.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import 'editar_perfil_screen.dart';
@@ -53,18 +54,29 @@ class _PerfilScreenState extends State<PerfilScreen> {
     }
   }
 
+  /// Formatea la URL devuelta por la API para convertir rutas relativas a absolutas
+  String? _obtenerUrlFotoPerfil(String? fotoPerfil) {
+    if (fotoPerfil == null || fotoPerfil.isEmpty) return null;
+    if (fotoPerfil.startsWith('http://') || fotoPerfil.startsWith('https://')) {
+      return fotoPerfil;
+    }
+    final hostBase = ApiClient.baseUrl.replaceAll('/api', '');
+    return '$hostBase$fotoPerfil';
+  }
+
   @override
   Widget build(BuildContext context) {
     final usuario = context.watch<AuthProvider>().usuario;
     final languageProvider = context.watch<LanguageProvider>();
 
-    // Construir la cadena con el municipio y departamento
     String ubicacionGeografica = '';
     if (usuario?.municipio != null && usuario?.departamento != null) {
       ubicacionGeografica = '${usuario!.municipio}, ${usuario.departamento}';
     } else if (usuario?.departamento != null) {
       ubicacionGeografica = usuario!.departamento!;
     }
+
+    final urlFoto = _obtenerUrlFotoPerfil(usuario?.fotoPerfil);
 
     return Scaffold(
       appBar: AppBar(
@@ -80,12 +92,13 @@ class _PerfilScreenState extends State<PerfilScreen> {
                     children: [
                       Stack(
                         children: [
-                          usuario.fotoPerfil != null &&
-                                  usuario.fotoPerfil!.isNotEmpty
+                          urlFoto != null
                               ? CircleAvatar(
                                   radius: 44,
-                                  backgroundImage:
-                                      NetworkImage(usuario.fotoPerfil!),
+                                  backgroundImage: NetworkImage(urlFoto),
+                                  onBackgroundImageError: (_, __) {
+                                    // Maneja silenciosamente errores si la URL no responde
+                                  },
                                 )
                               : CircleAvatar(
                                   radius: 44,

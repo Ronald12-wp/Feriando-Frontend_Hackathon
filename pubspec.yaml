@@ -18,6 +18,9 @@ dependencies:
   google_fonts: ^6.2.1
   intl: ^0.20.2
   image_picker: ^0.8.8+2
+  firebase_auth: ^6.7.0
+  cloud_firestore: ^6.10.0
+  http_parser: ^4.1.2
   signalr_netcore: ^1.4.4
 
 dev_dependencies:
@@ -31,7 +34,7 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/images/logo.png
+    - assets/images/logo.jpeg
     - assets/images/app_icon.jpeg
 
 flutter_icons:
