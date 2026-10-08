@@ -1,97 +1,119 @@
-# Feriando
+# Feriando — Aplicación móvil
 
-## Descripción técnica
+Feriando es una aplicación móvil para explorar productos y coordinar intercambios entre personas. Desde la app, los usuarios pueden crear una cuenta, iniciar sesión, consultar el catálogo, publicar productos, proponer trueques, revisar notificaciones y conversar mediante el chat.
 
-Feriando es una aplicación móvil Flutter para el intercambio digital de productos con un enfoque de género. Permite a los usuarios registrarse, iniciar sesión, publicar productos, navegar catálogos, enviar solicitudes de trueque y gestionar su perfil.
+Este repositorio contiene el cliente móvil desarrollado con Flutter. Para obtener y guardar los datos, se conecta al backend Feriando API, que administra las cuentas y persiste la información en SQL Server.
 
-La aplicación está diseñada para ejecutarse en Android, iOS y web usando Flutter, y emplea `provider` para la gestión del estado, `http` para el consumo de APIs y `shared_preferences` para el almacenamiento local de datos de sesión.
+## Tecnologías
 
-## Tecnologías utilizadas
+- **Flutter y Dart:** interfaz y ejecución de la aplicación móvil.
+- **Provider:** estado compartido entre pantallas y funcionalidades.
+- **HTTP:** comunicación REST con el backend.
+- **SignalR:** conexión en tiempo real para el chat.
+- **Shared Preferences:** almacenamiento local de preferencias y datos de sesión.
+- **Image Picker:** selección de imágenes de productos desde el dispositivo.
+- **Flutter Localizations e Intl:** soporte de localización y formato de datos.
+- **Google Fonts:** tipografía de la interfaz.
 
-- Flutter
-- Dart
-- Provider
-- HTTP
-- Shared Preferences
-- Google Fonts
-- Intl
-- Image Picker
-- Flutter Localizations
+Las dependencias y sus versiones se encuentran declaradas en `pubspec.yaml`; `pubspec.lock` registra las versiones resueltas para este proyecto.
 
-## Estructura del proyecto
+## Organización del código
 
-- `lib/main.dart` - punto de entrada de la aplicación.
-- `lib/api/` - definición de endpoints y lógica para llamadas HTTP.
-- `lib/models/` - modelos de datos como `usuario`, `producto`, `trueque` y `catalogos`.
-- `lib/providers/` - estado de la aplicación y lógica de negocio (`auth`, `producto`, `trueque`, `language`).
-- `lib/screens/` - interfaces de usuario para autenticación, catálogo, productos, trueques y perfil.
-- `lib/theme/` - tema visual de la aplicación.
-- `assets/images/` - recursos de imágenes usados en la app.
+| Ruta | Contenido |
+| --- | --- |
+| `lib/main.dart` | Inicializa la aplicación, tema, localización y providers globales. |
+| `lib/screens/` | Pantallas agrupadas por función: autenticación, catálogo, productos, trueques, chat, notificaciones y perfil. |
+| `lib/services/` | Comunicación con la API y operaciones de sesión, catálogo, productos, trueques, notificaciones y chat. |
+| `lib/api/` | Rutas y utilidades relacionadas con la API. |
+| `lib/models/` | Modelos Dart que representan usuarios, productos, trueques, mensajes y catálogos. |
+| `lib/providers/` | Estado que las pantallas comparten, como autenticación, productos, trueques, idioma y chat. |
+| `lib/widgets/` | Componentes reutilizables de interfaz. |
+| `lib/theme/` | Colores y estilos visuales. |
+| `assets/images/` | Logo e ícono de la aplicación declarados en `pubspec.yaml`. |
+| `android/`, `ios/`, `windows/`, `linux/`, `macos/` | Configuración nativa para las plataformas incluidas en el proyecto. |
 
-## Instalación básica
+En general, las pantallas muestran la interfaz y recogen las acciones de la persona; los providers mantienen el estado que necesitan varias pantallas; los servicios preparan las solicitudes y llaman al backend; y los modelos convierten las respuestas JSON en objetos Dart.
 
-1. Clona el repositorio:
+## Requisitos
+
+- Flutter instalado, con una versión compatible con Dart `>=3.3.0 <4.0.0` (revisa `flutter --version`).
+- Un dispositivo o emulador Android para ejecutar la app en Android. Para compilar y ejecutar en iOS se requiere macOS con Xcode.
+- El backend Feriando API en ejecución y accesible desde el dispositivo.
+
+Verifica la instalación y los dispositivos disponibles con:
 
 ```bash
-git clone https://github.com/<usuario>/<repositorio>.git
-cd Feriando-Frontend
+flutter doctor
+flutter devices
 ```
 
-2. Asegúrate de tener instalado Flutter 3.3 o superior y un SDK de Dart compatible.
+## Preparar el proyecto
 
-3. Recupera las dependencias:
+Desde la carpeta raíz de este repositorio, descarga las dependencias:
 
 ```bash
 flutter pub get
 ```
 
-4. Verifica el entorno:
+Este comando lee `pubspec.yaml` y prepara los paquetes necesarios. Si cambias dependencias declaradas en ese archivo, vuelve a ejecutarlo.
 
-```bash
-flutter doctor
+## Configurar la conexión al backend
+
+La dirección de la API se controla con `API_BASE_URL`. Si no se especifica, el código usa `http://10.114.89.98:5080/api`, una dirección de red local que puede no corresponder con tu computadora. Configura una dirección alcanzable desde el dispositivo y termina la ruta con `/api`.
+
+Ejemplos:
+
+- **Emulador Android:** si el backend corre en la misma computadora, usa `http://10.0.2.2:5080/api`. Android ya transforma una dirección `localhost` o `127.0.0.1` dada para el emulador a `10.0.2.2`.
+- **Teléfono Android físico:** usa la IPv4 local de la computadora que ejecuta el backend, por ejemplo `http://192.168.1.25:5080/api`. El teléfono y la computadora deben poder comunicarse en la misma red y el puerto debe estar accesible.
+- **iOS Simulator:** normalmente puede usarse `http://localhost:5080/api` cuando el backend corre en la misma Mac.
+
+Pasa el valor al iniciar la aplicación. Por ejemplo, en PowerShell para un teléfono Android:
+
+```powershell
+flutter run -d <ID-DEL-DISPOSITIVO> --dart-define=API_BASE_URL=http://192.168.1.25:5080/api
 ```
 
-## Ejecución del sistema
-
-Ejecuta la aplicación en un dispositivo o emulador:
+En macOS/Linux, el mismo comando puede ejecutarse en una terminal POSIX:
 
 ```bash
-flutter run
+flutter run -d <ID-DEL-DISPOSITIVO> --dart-define=API_BASE_URL=http://192.168.1.25:5080/api
 ```
 
-La API de desarrollo usa `http://192.168.100.10:5080/api` como dirección predeterminada para conectarse desde un teléfono Android físico. El teléfono y la computadora deben estar en la misma red Wi-Fi. Si la IPv4 de la computadora cambia, inicia la app indicando la dirección actual:
+Reemplaza la IP de ejemplo por la dirección real de la computadora. El valor de `--dart-define` se fija al compilar/iniciar la app; si cambia la dirección del backend, reinicia la app con el nuevo valor. El backend debe estar levantado antes de probar operaciones que consultan o envían datos.
+
+## Ejecutar la aplicación
+
+Lista los dispositivos con `flutter devices`, copia el identificador que corresponda y ejecuta:
 
 ```bash
-flutter run --dart-define=API_BASE_URL=http://<IP-DE-LA-COMPUTADORA>:5080/api
+flutter run -d <ID-DEL-DISPOSITIVO> --dart-define=API_BASE_URL=http://<HOST-DEL-BACKEND>:5080/api
 ```
 
-La computadora y el teléfono deben estar en la misma red, y el puerto 5080 debe estar accesible.
+Flutter compila la app para el dispositivo seleccionado, la instala y muestra los registros en la terminal. Para detener la ejecución, presiona `q` o `Ctrl+C` en esa terminal.
 
-Para Android usa:
+Comandos abreviados para seleccionar plataforma:
 
 ```bash
 flutter run -d android
-```
-
-Para iOS (desde macOS) usa:
-
-```bash
 flutter run -d ios
+flutter run -d windows
+flutter run -d linux
+flutter run -d macos
 ```
 
-Para web usa:
+En estos comandos también puedes añadir `--dart-define=API_BASE_URL=...` para definir el backend. La disponibilidad depende del sistema operativo y de los dispositivos configurados. Este repositorio no incluye actualmente una carpeta `web/`, por lo que no se documenta ejecución web.
 
-```bash
-flutter run -d chrome
-```
+## Uso de la API y del chat
 
-## Notas adicionales
+La app consume endpoints REST del backend y conserva el token de sesión localmente para enviarlo en solicitudes autenticadas. Las imágenes de productos se envían como formularios multipart. El chat usa SignalR y el hub `/chatHub` del backend. Por eso, para probar inicio de sesión, catálogo, publicación, trueques o chat, asegúrate de tener el backend y su base de datos configurados.
 
-- La app está configurada para español (`Locale('es')`).
-- Los assets se cargan desde `assets/images/logo.jpeg`.
-- El nombre del paquete en `pubspec.yaml` es `fereando`.
-- Si se requiere cambiar el paquete de Android/iOS, usa la herramienta adecuada para renombrar el paquete.
+## Idioma e imágenes
 
-## Contacto
+La interfaz actualmente declara español como idioma disponible. El logo y el ícono usados por la app están en `assets/images/` y registrados bajo `flutter.assets` en `pubspec.yaml`. Si agregas recursos, decláralos allí para que Flutter los incluya en el paquete.
 
-Para problemas con la instalación o ejecución, ejecuta `flutter doctor` y revisa los mensajes de error que aparezcan.
+## Solución de problemas
+
+- **La app no conecta con la API:** comprueba que el backend esté activo, que `API_BASE_URL` tenga el host y puerto correctos y que sea accesible desde el dispositivo. En un teléfono físico, `localhost` apunta al propio teléfono, no a la computadora.
+- **El emulador Android no llega al backend local:** usa `10.0.2.2` como host en lugar de `localhost`.
+- **Cambiaste la dirección de la API y sigue usando la anterior:** detén y vuelve a iniciar la app con el nuevo `--dart-define`.
+- **Falla la preparación o compilación:** ejecuta `flutter doctor` y revisa los requisitos de la plataforma que estás compilando.
