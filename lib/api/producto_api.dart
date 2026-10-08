@@ -15,8 +15,6 @@ class ProductoApi {
       'Cantidad': formulario.cantidad,
       'CategoriaID': formulario.categoriaID,
       'UnidadMedidaID': formulario.unidadMedidaID,
-      'MunicipioID': formulario.municipioID,
-      'DireccionExacta': formulario.direccionExacta,
       'TipoOferta': formulario.tipoOferta,
       'PrecioReferencial': formulario.precioReferencial,
       'ReemplazarImagenes': formulario.reemplazarImagenes,
@@ -103,7 +101,7 @@ class ProductoApi {
   }
 
   Future<void> cambiarEstado(int id, String nuevoEstado) async {
-    await _api.put('/productos/$id', {'estado': nuevoEstado});
+    await _api.put('/productos/$id/estado', {'estado': nuevoEstado});
   }
 
   Future<void> eliminar(int id) async {

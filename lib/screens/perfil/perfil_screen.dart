@@ -188,6 +188,9 @@ class _PerfilScreenState extends State<PerfilScreen> {
                     Icons.phone_outlined,
                     languageProvider.translate('profile_phone'),
                     usuario.telefono),
+                if (usuario.cedula != null && usuario.cedula!.isNotEmpty)
+                  _filaInfo(Icons.badge_outlined,
+                      languageProvider.translate('profile_cedula'), usuario.cedula!),
                 if (usuario.correo != null && usuario.correo!.isNotEmpty)
                   _filaInfo(
                       Icons.mail_outline,

@@ -13,12 +13,14 @@ class ChatScreen extends StatefulWidget {
   final String chatId;
   final int usuarioActualId;
   final String nombreContacto;
+  final String? mensajeInicial;
 
   const ChatScreen({
     super.key,
     required this.chatId,
     required this.usuarioActualId,
     required this.nombreContacto,
+    this.mensajeInicial,
   });
 
   @override
@@ -37,6 +39,10 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
+    final mensajeInicial = widget.mensajeInicial?.trim();
+    if (mensajeInicial != null && mensajeInicial.isNotEmpty) {
+      _mensajeController.text = mensajeInicial;
+    }
     _inicializarChat();
   }
 
@@ -58,6 +64,9 @@ class _ChatScreenState extends State<ChatScreen> {
       await _chatService.conectarSignalR(widget.chatId, _manejarNuevoMensaje);
       if (!mounted) return;
       setState(() => _conectado = _chatService.isConnected);
+      if (_conectado && _mensajeController.text.trim().isNotEmpty) {
+        await _enviarMensaje();
+      }
     } catch (_) {
       if (!mounted) return;
       setState(() => _conectado = false);
@@ -81,13 +90,15 @@ class _ChatScreenState extends State<ChatScreen> {
     final texto = _mensajeController.text.trim();
     if (texto.isEmpty || !_conectado) return;
 
-    await _chatService.enviarMensaje(
-      widget.chatId,
-      widget.usuarioActualId,
-      texto,
-    );
-
-    _mensajeController.clear();
+    try {
+      await _chatService.enviarMensaje(widget.chatId, texto);
+      _mensajeController.clear();
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.read<LanguageProvider>().translate('chat_send_error'))),
+      );
+    }
   }
 
   void _scrollHastaAbajo() {

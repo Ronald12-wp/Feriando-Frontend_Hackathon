@@ -126,9 +126,20 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                 key: ValueKey(conversacion.chatId),
                                 direction: DismissDirection.endToStart,
                                 confirmDismiss: (_) => _confirmarOcultar(),
-                                onDismissed: (_) => context
-                                    .read<ChatProvider>()
-                                    .ocultarConversacion(conversacion.chatId),
+                                onDismissed: (_) async {
+                                  try {
+                                    await context
+                                        .read<ChatProvider>()
+                                        .ocultarConversacion(conversacion.chatId);
+                                  } catch (_) {
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text(lang.translate('chat_delete_error'))),
+                                      );
+                                      await _cargarConversaciones();
+                                    }
+                                  }
+                                },
                                 background: Container(
                                   alignment: Alignment.centerRight,
                                   padding: const EdgeInsets.only(right: 24),

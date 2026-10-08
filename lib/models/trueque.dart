@@ -1,6 +1,7 @@
 class Trueque {
   final int truequeID;
   final String estado; // Pendiente | Aceptado | Rechazado | Completado | Cancelado
+  final bool yaValore;
   final int productoOfertadoID;
   final String productoOfertadoNombre;
   final int? productoSolicitadoID;
@@ -18,6 +19,7 @@ class Trueque {
   Trueque({
     required this.truequeID,
     required this.estado,
+    this.yaValore = false,
     required this.productoOfertadoID,
     required this.productoOfertadoNombre,
     this.productoSolicitadoID,
@@ -36,6 +38,7 @@ class Trueque {
   factory Trueque.fromJson(Map<String, dynamic> json) => Trueque(
         truequeID: json['truequeID'],
         estado: json['estado'] ?? 'Pendiente',
+        yaValore: json['yaValore'] == true,
         productoOfertadoID: json['productoOfertadoID'],
         productoOfertadoNombre: json['productoOfertadoNombre'] ?? '',
         productoSolicitadoID: json['productoSolicitadoID'],

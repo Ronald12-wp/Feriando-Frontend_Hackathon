@@ -39,7 +39,7 @@ class ProductoService {
 
   Future<void> actualizar(int id, ProductoFormulario formulario) => actualizarProducto(id, formulario);
 
-  /// UPDATE rápido — cambiar solo el estado (ej. marcar Inactivo)
+  /// Solo permite pausar una publicación o volver a publicarla.
   Future<void> cambiarEstado(int id, String nuevoEstado) => _api.cambiarEstado(id, nuevoEstado);
 
   /// DELETE

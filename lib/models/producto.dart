@@ -16,10 +16,8 @@ class Producto {
   final List<String> imagenes;
   final int usuarioID;
   final String nombreProductora;
-  final int? municipioID;
   final String municipio;
   final String departamento;
-  final String? direccionExacta;
 
   String get imagenPrincipalUrl => imagenes.isNotEmpty ? imagenUrl(0) : '';
 
@@ -55,10 +53,8 @@ class Producto {
     required this.imagenes,
     required this.usuarioID,
     required this.nombreProductora,
-    this.municipioID,
     required this.municipio,
     required this.departamento,
-    this.direccionExacta,
   });
 
   factory Producto.fromJson(Map<String, dynamic> json) => Producto(
@@ -78,10 +74,8 @@ class Producto {
             .toList(),
         usuarioID: json['usuarioID'],
         nombreProductora: json['nombreProductora'] ?? '',
-        municipioID: json['municipioID'] is num ? (json['municipioID'] as num).toInt() : null,
         municipio: json['municipio'] ?? '',
         departamento: json['departamento'] ?? '',
-        direccionExacta: json['direccionExacta'],
       );
 }
 
@@ -92,8 +86,6 @@ class ProductoFormulario {
   String? descripcion;
   double cantidad;
   int? unidadMedidaID;
-  int? municipioID;
-  String? direccionExacta;
   String tipoOferta;
   double? precioReferencial;
   bool reemplazarImagenes;
@@ -107,8 +99,6 @@ class ProductoFormulario {
     this.descripcion,
     this.cantidad = 1,
     this.unidadMedidaID,
-    this.municipioID,
-    this.direccionExacta,
     this.tipoOferta = 'Trueque',
     this.precioReferencial,
     this.reemplazarImagenes = false,
@@ -123,8 +113,6 @@ class ProductoFormulario {
         'Descripcion': descripcion,
         'Cantidad': cantidad,
         'UnidadMedidaID': unidadMedidaID,
-        'MunicipioID': municipioID,
-        'DireccionExacta': direccionExacta,
         'TipoOferta': tipoOferta,
         'PrecioReferencial': precioReferencial,
       };
@@ -133,8 +121,6 @@ class ProductoFormulario {
         'Nombre': nombre,
         'Descripcion': descripcion,
         'Cantidad': cantidad,
-        'MunicipioID': municipioID,
-        'DireccionExacta': direccionExacta,
         'TipoOferta': tipoOferta,
         'PrecioReferencial': precioReferencial,
       };

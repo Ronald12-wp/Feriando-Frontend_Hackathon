@@ -33,23 +33,18 @@ class _PublicarProductoScreenState extends State<PublicarProductoScreen> {
   final _descripcion = TextEditingController();
   final _cantidad = TextEditingController(text: '1');
   final _precio = TextEditingController();
-  final _direccionExacta = TextEditingController();
 
   final CatalogoService _catalogoService = CatalogoService();
   final ImagePicker _picker = ImagePicker();
 
   List<Categoria> _categorias = [];
   List<UnidadMedida> _unidades = [];
-  List<Departamento> _departamentos = [];
-  List<Municipio> _municipiosDisponibles = [];
   final List<XFile> _imagenesSeleccionadas = [];
   final List<String> _imagenesActuales = [];
   List<String> _imagenesOriginales = [];
 
   Categoria? _categoriaSeleccionada;
   UnidadMedida? _unidadSeleccionada;
-  Departamento? _departamentoSeleccionado;
-  Municipio? _municipioSeleccionado;
 
   String _tipoOferta = 'Trueque';
   bool _cargandoCatalogos = true;
@@ -69,7 +64,6 @@ class _PublicarProductoScreenState extends State<PublicarProductoScreen> {
     _descripcion.dispose();
     _cantidad.dispose();
     _precio.dispose();
-    _direccionExacta.dispose();
     super.dispose();
   }
 
@@ -80,7 +74,6 @@ class _PublicarProductoScreenState extends State<PublicarProductoScreen> {
     _descripcion.text = p.descripcion ?? '';
     _cantidad.text = p.cantidad.toString();
     _precio.text = p.precioReferencial?.toString() ?? '';
-    _direccionExacta.text = p.direccionExacta ?? '';
     _tipoOferta = p.tipoOferta;
     _imagenesOriginales = List<String>.from(p.imagenes);
     _imagenesActuales.addAll(_imagenesOriginales);
@@ -90,13 +83,11 @@ class _PublicarProductoScreenState extends State<PublicarProductoScreen> {
     try {
       final categorias = await _catalogoService.categorias();
       final unidades = await _catalogoService.unidadesMedida();
-      final departamentos = await _catalogoService.departamentos();
 
       if (!mounted) return;
       setState(() {
         _categorias = categorias;
         _unidades = unidades;
-        _departamentos = departamentos;
 
         if (widget.productoExistente != null) {
           final p = widget.productoExistente!;
@@ -105,23 +96,6 @@ class _PublicarProductoScreenState extends State<PublicarProductoScreen> {
           _unidadSeleccionada =
               unidades.where((u) => u.nombre == p.unidadMedida).firstOrNull;
 
-          _departamentoSeleccionado = departamentos
-              .where((d) => d.municipios.any(
-                    (municipio) =>
-                        municipio.municipioID == p.municipioID ||
-                        (p.municipioID == null &&
-                            municipio.nombre == p.municipio &&
-                            d.nombre == p.departamento),
-                  ))
-              .firstOrNull;
-          if (_departamentoSeleccionado != null) {
-            _municipiosDisponibles = _departamentoSeleccionado!.municipios;
-            _municipioSeleccionado = _municipiosDisponibles
-                .where((m) =>
-                    m.municipioID == p.municipioID ||
-                    (p.municipioID == null && m.nombre == p.municipio))
-                .firstOrNull;
-          }
         }
         _cargandoCatalogos = false;
       });
@@ -133,14 +107,6 @@ class _PublicarProductoScreenState extends State<PublicarProductoScreen> {
         });
       }
     }
-  }
-
-  void _onDepartamentoChanged(Departamento? dep) {
-    setState(() {
-      _departamentoSeleccionado = dep;
-      _municipioSeleccionado = null;
-      _municipiosDisponibles = dep?.municipios ?? [];
-    });
   }
 
   Future<void> _seleccionarImagenes() async {
@@ -177,15 +143,6 @@ class _PublicarProductoScreenState extends State<PublicarProductoScreen> {
       return;
     }
 
-    if (_departamentoSeleccionado == null || _municipioSeleccionado == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(lang
-                .translate('publish_product_select_department_municipality'))),
-      );
-      return;
-    }
-
     setState(() => _guardando = true);
 
     final reemplazarImagenes = widget.esEdicion &&
@@ -209,10 +166,6 @@ class _PublicarProductoScreenState extends State<PublicarProductoScreen> {
           _descripcion.text.trim().isEmpty ? null : _descripcion.text.trim(),
       cantidad: double.tryParse(_cantidad.text) ?? 1,
       unidadMedidaID: _unidadSeleccionada?.unidadMedidaID,
-      municipioID: _municipioSeleccionado!.municipioID,
-      direccionExacta: _direccionExacta.text.trim().isEmpty
-          ? null
-          : _direccionExacta.text.trim(),
       tipoOferta: _tipoOferta,
       precioReferencial:
           _precio.text.trim().isEmpty ? null : double.tryParse(_precio.text),
@@ -474,54 +427,8 @@ class _PublicarProductoScreenState extends State<PublicarProductoScreen> {
                         ),
                         const SizedBox(height: 18),
 
-                        // Sección de Ubicación Geográfica
-                        Text(lang.translate('publish_location'),
-                            style: AppTextStyles.etiqueta),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: DropdownButtonFormField<Departamento>(
-                                initialValue: _departamentoSeleccionado,
-                                isExpanded: true,
-                                menuMaxHeight: 220,
-                                decoration: InputDecoration(
-                                    labelText:
-                                        lang.translate('catalog_department')),
-                                items: _departamentos
-                                    .map((d) => DropdownMenuItem(
-                                        value: d, child: Text(d.nombre)))
-                                    .toList(),
-                                onChanged: _onDepartamentoChanged,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: DropdownButtonFormField<Municipio>(
-                                initialValue: _municipioSeleccionado,
-                                isExpanded: true,
-                                menuMaxHeight: 220,
-                                decoration: InputDecoration(
-                                    labelText:
-                                        lang.translate('catalog_municipality')),
-                                items: _municipiosDisponibles
-                                    .map((m) => DropdownMenuItem(
-                                        value: m, child: Text(m.nombre)))
-                                    .toList(),
-                                onChanged: _departamentoSeleccionado == null
-                                    ? null
-                                    : (v) => setState(
-                                        () => _municipioSeleccionado = v),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 14),
-                        AppTextField(
-                          etiqueta: lang.translate('location_exact_optional'),
-                          controller: _direccionExacta,
-                        ),
-
+                        Text(lang.translate('publish_location_from_profile'),
+                            style: AppTextStyles.caption),
                         const SizedBox(height: 18),
                         Text(lang.translate('offer_type'),
                             style: AppTextStyles.etiqueta),
