@@ -81,7 +81,12 @@ class _TruequesScreenState extends State<TruequesScreen> with SingleTickerProvid
                 const SizedBox(height: 8),
                 TextField(
                   controller: comentario,
-                  decoration: InputDecoration(labelText: lang.translate('trades_comment_optional')),
+                  maxLength: 300,
+                  maxLines: 3,
+                  decoration: InputDecoration(
+                    labelText: lang.translate('trades_comment_optional'),
+                    alignLabelWithHint: true,
+                  ),
                 ),
               ],
             ),
@@ -237,7 +242,7 @@ class _TruequesScreenState extends State<TruequesScreen> with SingleTickerProvid
                       ],
                     ),
                   ],
-                  if (t.estado == 'Aceptado') ...[
+                  if (t.estado == 'Aceptado' && !t.yaValore) ...[
                     const SizedBox(height: 12),
                     AppOutlineChip(
                       texto: lang.translate('trades_rating_title'),

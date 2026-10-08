@@ -3,9 +3,11 @@ class Usuario {
   final String nombres;
   final String apellidos;
   final String telefono;
+  final String? cedula;
   final String? correo;
   final String? genero;
   final int? municipioID;
+  final int? departamentoID;
   final String? municipio;
   final String? departamento;
   final String? direccionExacta;
@@ -19,9 +21,11 @@ class Usuario {
     required this.nombres,
     required this.apellidos,
     required this.telefono,
+    this.cedula,
     this.correo,
     this.genero,
     this.municipioID,
+    this.departamentoID,
     this.municipio,
     this.departamento,
     this.direccionExacta,
@@ -44,9 +48,11 @@ class Usuario {
         nombres: json['nombres'] ?? '',
         apellidos: json['apellidos'] ?? '',
         telefono: json['telefono'] ?? '',
+        cedula: json['cedula'],
         correo: json['correo'],
         genero: json['genero'],
         municipioID: json['municipioID'] is num ? (json['municipioID'] as num).toInt() : null,
+        departamentoID: json['departamentoID'] is num ? (json['departamentoID'] as num).toInt() : null,
         municipio: json['municipio'],
         departamento: json['departamento'],
         direccionExacta: json['direccionExacta'],
@@ -61,9 +67,11 @@ class Usuario {
         'nombres': nombres,
         'apellidos': apellidos,
         'telefono': telefono,
+        'cedula': cedula,
         'correo': correo,
         'genero': genero,
         'municipioID': municipioID,
+        'departamentoID': departamentoID,
         'municipio': municipio,
         'departamento': departamento,
         'direccionExacta': direccionExacta,

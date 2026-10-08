@@ -55,6 +55,28 @@ class _MisProductosScreenState extends State<MisProductosScreen> {
     }
   }
 
+  Future<void> _cambiarEstado(Producto producto) async {
+    final lang = context.read<LanguageProvider>();
+    final nuevoEstado = producto.estado == 'Disponible' ? 'Inactivo' : 'Disponible';
+    try {
+      await context.read<ProductoProvider>().cambiarEstado(
+            producto.productoID,
+            nuevoEstado,
+          );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(lang.translate('product_state_updated'))),
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(lang.translate('product_state_error'))),
+        );
+      }
+    }
+  }
+
   String _obtenerUbicacionTexto(Producto producto) {
     if (producto.municipio.isNotEmpty && producto.departamento.isNotEmpty) {
       return '${producto.municipio}, ${producto.departamento}';
@@ -141,7 +163,9 @@ class _MisProductosScreenState extends State<MisProductosScreen> {
                                 ),
                               ],
                               const SizedBox(height: 10),
-                              Row(
+                              Wrap(
+                                spacing: 4,
+                                runSpacing: 0,
                                 children: [
                                   TextButton.icon(
                                     icon: const Icon(Icons.edit_outlined, size: 18),
@@ -156,6 +180,21 @@ class _MisProductosScreenState extends State<MisProductosScreen> {
                                       if (mounted) context.read<ProductoProvider>().cargarMios();
                                     },
                                   ),
+                                  if (producto.estado == 'Disponible' || producto.estado == 'Inactivo')
+                                    TextButton.icon(
+                                      icon: Icon(
+                                        producto.estado == 'Disponible'
+                                            ? Icons.visibility_off_outlined
+                                            : Icons.publish,
+                                        size: 18,
+                                      ),
+                                      label: Text(lang.translate(
+                                        producto.estado == 'Disponible'
+                                            ? 'product_deactivate'
+                                            : 'product_reactivate',
+                                      )),
+                                      onPressed: () => _cambiarEstado(producto),
+                                    ),
                                   TextButton.icon(
                                     icon: const Icon(Icons.delete_outline, size: 18, color: AppColors.error),
                                     label: Text(lang.translate('delete'), style: const TextStyle(color: AppColors.error)),

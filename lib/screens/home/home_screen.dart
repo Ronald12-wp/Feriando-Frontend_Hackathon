@@ -30,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final lang = context.watch<LanguageProvider>();
-    final mensajesNoLeidos = context.watch<ChatProvider>().mensajesNoLeidos;
+    final chatsNoLeidos = context.watch<ChatProvider>().chatsNoLeidos;
     return Scaffold(
       body: IndexedStack(index: _indice, children: _pantallas),
       bottomNavigationBar: BottomNavigationBar(
@@ -41,8 +41,8 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(icon: const Icon(Icons.inventory_2_outlined), activeIcon: const Icon(Icons.inventory_2), label: lang.translate('home_my_products')),
           BottomNavigationBarItem(icon: const Icon(Icons.sync_alt_outlined), activeIcon: const Icon(Icons.sync_alt), label: lang.translate('home_trades')),
           BottomNavigationBarItem(
-            icon: _iconoChat(Icons.chat_bubble_outline, mensajesNoLeidos),
-            activeIcon: _iconoChat(Icons.chat_bubble, mensajesNoLeidos),
+            icon: _iconoChat(Icons.chat_bubble_outline, chatsNoLeidos),
+            activeIcon: _iconoChat(Icons.chat_bubble, chatsNoLeidos),
             label: lang.translate('home_chats'),
           ),
           BottomNavigationBarItem(icon: const Icon(Icons.person_outline), activeIcon: const Icon(Icons.person), label: lang.translate('home_profile')),

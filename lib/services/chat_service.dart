@@ -2,6 +2,7 @@ import 'package:signalr_netcore/signalr_client.dart';
 import '../models/conversacion_chat.dart';
 import '../models/mensaje_chat.dart';
 import 'api_client.dart';
+import 'session_service.dart';
 
 class ChatService {
   static String get baseUrl => ApiClient.baseUrl;
@@ -48,10 +49,32 @@ class ChatService {
         .post('/chat/conversaciones/${Uri.encodeComponent(chatId)}/leida', {});
   }
 
+  Future<void> ocultarConversacion(String chatId) async {
+    await _api.delete('/chat/conversaciones/${Uri.encodeComponent(chatId)}');
+  }
+
+  Future<void> restaurarConversacion(String chatId) async {
+    await _api.post(
+      '/chat/conversaciones/${Uri.encodeComponent(chatId)}/restaurar',
+      {},
+    );
+  }
+
   Future<void> conectarSignalR(
       String chatId, Function(MensajeChat) onNuevoMensaje) async {
     _hubConnection = HubConnectionBuilder()
-        .withUrl('$hubUrl/chatHub')
+        .withUrl(
+          '$hubUrl/chatHub',
+          options: HttpConnectionOptions(
+            accessTokenFactory: () async {
+              final token = await SessionService.obtenerToken();
+              if (token == null || token.isEmpty) {
+                throw StateError('Inicia sesión para usar el chat.');
+              }
+              return token;
+            },
+          ),
+        )
         .withAutomaticReconnect()
         .build();
 
@@ -73,11 +96,9 @@ class ChatService {
     await _hubConnection.invoke('UnirseAChat', args: [chatId]);
   }
 
-  Future<void> enviarMensaje(
-      String chatId, int emisorId, String mensaje) async {
+  Future<void> enviarMensaje(String chatId, String mensaje) async {
     if (isConnected) {
-      await _hubConnection
-          .invoke('EnviarMensaje', args: [chatId, emisorId, mensaje]);
+      await _hubConnection.invoke('EnviarMensaje', args: [chatId, mensaje]);
     }
   }
 

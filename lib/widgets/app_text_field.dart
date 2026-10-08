@@ -9,6 +9,7 @@ class AppTextField extends StatelessWidget {
   final String? Function(String?)? validador;
   final int maxLineas;
   final IconData? icono;
+  final TextCapitalization textCapitalization;
 
   const AppTextField({
     super.key,
@@ -20,6 +21,7 @@ class AppTextField extends StatelessWidget {
     this.validador,
     this.maxLineas = 1,
     this.icono,
+    this.textCapitalization = TextCapitalization.none,
   });
 
   @override
@@ -28,6 +30,7 @@ class AppTextField extends StatelessWidget {
       controller: controller,
       obscureText: esPassword,
       keyboardType: tipoTeclado,
+      textCapitalization: textCapitalization,
       maxLines: esPassword ? 1 : maxLineas,
       validator: validador,
       decoration: InputDecoration(

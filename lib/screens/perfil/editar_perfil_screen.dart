@@ -24,6 +24,7 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
   late final TextEditingController _nombresController;
   late final TextEditingController _apellidosController;
   late final TextEditingController _telefonoController;
+  late final TextEditingController _cedulaController;
   late final TextEditingController _correoController;
   late final TextEditingController _direccionController;
 
@@ -48,6 +49,7 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
     _apellidosController =
         TextEditingController(text: widget.usuario.apellidos);
     _telefonoController = TextEditingController(text: widget.usuario.telefono);
+    _cedulaController = TextEditingController(text: widget.usuario.cedula ?? '');
     _correoController =
         TextEditingController(text: widget.usuario.correo ?? '');
     _direccionController =
@@ -67,6 +69,7 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
     _nombresController.dispose();
     _apellidosController.dispose();
     _telefonoController.dispose();
+    _cedulaController.dispose();
     _correoController.dispose();
     _direccionController.dispose();
     super.dispose();
@@ -140,6 +143,12 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
       );
       return;
     }
+    if (_cedulaController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(lang.translate('edit_profile_error_fields'))),
+      );
+      return;
+    }
     if (_departamentoSeleccionado == null ||
         _municipioSeleccionado == null ||
         _idiomaSeleccionado == null ||
@@ -160,10 +169,12 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
         nombres: _nombresController.text.trim(),
         apellidos: _apellidosController.text.trim(),
         telefono: _telefonoController.text.trim(),
+        cedula: _cedulaController.text.trim(),
         correo: _correoController.text.trim().isEmpty
             ? null
             : _correoController.text.trim(),
         genero: _generoSeleccionado,
+        departamentoID: _departamentoSeleccionado!.departamentoID,
         municipioID: _municipioSeleccionado!.municipioID,
         direccionExacta: _direccionController.text.trim(),
         idiomaPreferidoID: _idiomaSeleccionado!.idiomaID,
@@ -235,9 +246,11 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
                     ),
                   ),
                 )
-              : ListView(
-                  padding: const EdgeInsets.all(20),
-                  children: [
+              : SafeArea(
+                  bottom: true,
+                  child: ListView(
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+                    children: [
                     // Foto de perfil
                     Center(
                       child: Stack(
@@ -322,6 +335,15 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
                     ),
                     const SizedBox(height: 16),
 
+                    _buildTextField(
+                      label: context
+                          .watch<LanguageProvider>()
+                          .translate('profile_cedula'),
+                      controller: _cedulaController,
+                      enabled: !_cargando,
+                    ),
+                    const SizedBox(height: 16),
+
                     // Correo
                     _buildTextField(
                       label: context
@@ -342,6 +364,7 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
                     const SizedBox(height: 8),
                     DropdownButtonFormField<String>(
                       initialValue: _generoSeleccionado,
+                      isExpanded: true,
                       decoration:
                           const InputDecoration(border: OutlineInputBorder()),
                       items: [
@@ -373,6 +396,8 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
 
                     DropdownButtonFormField<Departamento>(
                       initialValue: _departamentoSeleccionado,
+                      isExpanded: true,
+                      menuMaxHeight: 320,
                       decoration: InputDecoration(
                         labelText: context
                             .watch<LanguageProvider>()
@@ -387,6 +412,8 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
                     const SizedBox(height: 16),
                     DropdownButtonFormField<Municipio>(
                       initialValue: _municipioSeleccionado,
+                      isExpanded: true,
+                      menuMaxHeight: 320,
                       decoration: InputDecoration(
                         labelText: context
                             .watch<LanguageProvider>()
@@ -415,6 +442,8 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
 
                     DropdownButtonFormField<Idioma>(
                       initialValue: _idiomaSeleccionado,
+                      isExpanded: true,
+                      menuMaxHeight: 320,
                       decoration: InputDecoration(
                         labelText: context
                             .watch<LanguageProvider>()
@@ -469,7 +498,8 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
                               .watch<LanguageProvider>()
                               .translate('edit_profile_save_changes')),
                     ),
-                  ],
+                    ],
+                  ),
                 ),
     );
   }

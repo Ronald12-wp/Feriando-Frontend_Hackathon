@@ -23,13 +23,58 @@ class DetalleProductoScreen extends StatefulWidget {
 
 class _DetalleProductoScreenState extends State<DetalleProductoScreen> {
   final ProductoService _service = ProductoService();
+  final TextEditingController _mensajeRapidoController = TextEditingController(
+    text: 'Hola. ¿Sigue estando disponible?',
+  );
   Producto? _producto;
   bool _cargando = true;
+  bool _enviandoMensaje = false;
 
   @override
   void initState() {
     super.initState();
     _cargar();
+  }
+
+  @override
+  void dispose() {
+    _mensajeRapidoController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _enviarConsulta(int usuarioActualID) async {
+    final mensaje = _mensajeRapidoController.text.trim();
+    if (mensaje.isEmpty || _producto == null || _enviandoMensaje) return;
+
+    setState(() => _enviandoMensaje = true);
+    final lang = context.read<LanguageProvider>();
+    final chatId = ChatService.crearChatId(
+      productoId: _producto!.productoID,
+      productorId: _producto!.usuarioID,
+      otroUsuarioId: usuarioActualID,
+    );
+
+    try {
+      await context.read<ChatProvider>().restaurarConversacion(chatId);
+      if (!mounted) return;
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => ChatScreen(
+            chatId: chatId,
+            usuarioActualId: usuarioActualID,
+            nombreContacto: _producto!.nombreProductora,
+            mensajeInicial: mensaje,
+          ),
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(lang.translate('product_quick_message_error'))),
+      );
+    } finally {
+      if (mounted) setState(() => _enviandoMensaje = false);
+    }
   }
 
   Future<void> _cargar() async {
@@ -182,35 +227,11 @@ class _DetalleProductoScreenState extends State<DetalleProductoScreen> {
                       ),
                       if (_producto!.estado == 'Disponible' && _producto!.usuarioID != usuarioActualID)
                         Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                          padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
                           child: Column(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              AppButton(
-                                texto: lang.translate('chat_start'),
-                                icono: Icons.chat_bubble_outline,
-                                onPressed: usuarioActualID == null
-                                    ? null
-                                    : () {
-                                        final chatId = ChatService.crearChatId(
-                                          productoId: _producto!.productoID,
-                                          productorId: _producto!.usuarioID,
-                                          otroUsuarioId: usuarioActualID,
-                                        );
-                                        context
-                                            .read<ChatProvider>()
-                                            .restaurarConversacion(chatId);
-                                        Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                            builder: (_) => ChatScreen(
-                                              chatId: chatId,
-                                              usuarioActualId: usuarioActualID,
-                                              nombreContacto:
-                                                  _producto!.nombreProductora,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                              ),
+                              _crearAccesoMensaje(lang, usuarioActualID),
                               const SizedBox(height: 12),
                               AppButton(
                                 texto: lang.translate('request_swap'),
@@ -227,6 +248,114 @@ class _DetalleProductoScreenState extends State<DetalleProductoScreen> {
                     ],
                   ),
                 ),
+    );
+  }
+
+  Widget _crearAccesoMensaje(LanguageProvider lang, int? usuarioActualID) {
+    final puedeEnviar = usuarioActualID != null && !_enviandoMensaje;
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.superficie,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.borde),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x14000000),
+            blurRadius: 8,
+            offset: Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.chat_bubble_outline,
+                  color: AppColors.verdeMilpa, size: 20),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  lang.translate('product_quick_message_title'),
+                  style: AppTextStyles.etiqueta,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _mensajeRapidoController,
+                  enabled: puedeEnviar,
+                  minLines: 1,
+                  maxLines: 3,
+                  maxLength: 4000,
+                  decoration: InputDecoration(
+                    hintText: lang.translate('product_quick_message_hint'),
+                    counterText: '',
+                    filled: true,
+                    fillColor: AppColors.cremaTortilla,
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 12),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      borderSide: const BorderSide(color: AppColors.borde),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      borderSide: const BorderSide(color: AppColors.borde),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      borderSide: const BorderSide(
+                          color: AppColors.verdeMilpa, width: 2),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              SizedBox(
+                height: 48,
+                child: FilledButton(
+                  onPressed: puedeEnviar
+                      ? () => _enviarConsulta(usuarioActualID!)
+                      : null,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppColors.verdeMilpa,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  child: _enviandoMensaje
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : Text(lang.translate('send')),
+                ),
+              ),
+            ],
+          ),
+          if (usuarioActualID == null) ...[
+            const SizedBox(height: 6),
+            Text(
+              lang.translate('product_quick_message_login'),
+              style: AppTextStyles.caption
+                  .copyWith(color: AppColors.textoSecundario),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }

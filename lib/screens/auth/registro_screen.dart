@@ -22,6 +22,7 @@ class _RegistroScreenState extends State<RegistroScreen> {
   final _nombres = TextEditingController();
   final _apellidos = TextEditingController();
   final _telefono = TextEditingController();
+  final _cedula = TextEditingController();
   final _correo = TextEditingController();
   final _direccionExacta = TextEditingController();
   final _password = TextEditingController();
@@ -50,6 +51,7 @@ class _RegistroScreenState extends State<RegistroScreen> {
     _nombres.dispose();
     _apellidos.dispose();
     _telefono.dispose();
+    _cedula.dispose();
     _correo.dispose();
     _direccionExacta.dispose();
     _password.dispose();
@@ -94,9 +96,11 @@ class _RegistroScreenState extends State<RegistroScreen> {
             nombres: _nombres.text.trim(),
             apellidos: _apellidos.text.trim(),
             telefono: _telefono.text.trim(),
+            cedula: _cedula.text.trim(),
             correo: _correo.text.trim().isEmpty ? null : _correo.text.trim(),
             password: _password.text,
             genero: _genero,
+            departamentoID: _departamentoSeleccionado!.departamentoID,
             municipioID: _municipioSeleccionado!.municipioID,
             direccionExacta: _direccionExacta.text.trim(),
             esProductora: _esProductora,
@@ -133,6 +137,15 @@ class _RegistroScreenState extends State<RegistroScreen> {
                 controller: _nombres,
                 validador: (v) => (v == null || v.trim().isEmpty)
                     ? '${languageProvider.translate('register_names')} es requerido'
+                    : null,
+              ),
+              const SizedBox(height: 14),
+              AppTextField(
+                etiqueta: languageProvider.translate('register_cedula'),
+                controller: _cedula,
+                textCapitalization: TextCapitalization.characters,
+                validador: (v) => (v == null || v.trim().isEmpty)
+                    ? '${languageProvider.translate('register_cedula')} es requerida'
                     : null,
               ),
               const SizedBox(height: 14),

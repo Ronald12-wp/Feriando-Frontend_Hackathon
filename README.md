@@ -59,6 +59,14 @@ Ejecuta la aplicación en un dispositivo o emulador:
 flutter run
 ```
 
+La API de desarrollo usa `http://192.168.100.10:5080/api` como dirección predeterminada para conectarse desde un teléfono Android físico. El teléfono y la computadora deben estar en la misma red Wi-Fi. Si la IPv4 de la computadora cambia, inicia la app indicando la dirección actual:
+
+```bash
+flutter run --dart-define=API_BASE_URL=http://<IP-DE-LA-COMPUTADORA>:5080/api
+```
+
+La computadora y el teléfono deben estar en la misma red, y el puerto 5080 debe estar accesible.
+
 Para Android usa:
 
 ```bash

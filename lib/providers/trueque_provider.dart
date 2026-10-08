@@ -51,5 +51,6 @@ class TruequeProvider extends ChangeNotifier {
 
   Future<void> valorar({required int truequeID, required int puntuacion, String? comentario}) async {
     await _service.valorar(truequeID: truequeID, puntuacion: puntuacion, comentario: comentario);
+    await cargarMios();
   }
 }
