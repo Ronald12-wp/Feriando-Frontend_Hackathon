@@ -23,7 +23,7 @@ class ApiClient {
   static String get baseUrl {
     const env = String.fromEnvironment(
       'API_BASE_URL',
-      defaultValue: 'http://192.168.100.10:5080/api',
+      defaultValue: 'http://192.168.100.12:5080/api',
     );
     try {
       final uri = Uri.parse(env);

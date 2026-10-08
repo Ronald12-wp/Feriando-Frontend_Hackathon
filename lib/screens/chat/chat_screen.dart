@@ -130,148 +130,164 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     final lang = context.watch<LanguageProvider>();
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            const CircleAvatar(
-              radius: 18,
-              backgroundColor: AppColors.verdeMilpaSuave,
-              child: Icon(Icons.person, color: AppColors.verdeMilpa),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                widget.nombreContacto,
-                style: AppTextStyles.cuerpoDestacado,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            const SizedBox(width: 6),
-            Icon(
-              Icons.circle,
-              size: 10,
-              color: _conectado ? Colors.green : Colors.grey,
-            ),
-          ],
+
+    return Container(
+      // AQUÍ SE AGREGA EL FONDO DE PANTALLA
+      decoration: const BoxDecoration(
+        color: AppColors.superficie, // Color de respaldo
+        image: DecorationImage(
+          // Cambia la ruta por la imagen de tu carpeta assets
+          image: AssetImage('assets/images/fondo_chat.png'),
+          fit: BoxFit.cover,
         ),
       ),
-      body: _cargando
-          ? const Center(
-              child: CircularProgressIndicator(color: AppColors.verdeMilpa),
-            )
-          : Column(
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                    controller: _scrollController,
-                    padding: const EdgeInsets.all(16),
-                    itemCount: _mensajes.length,
-                    itemBuilder: (context, index) {
-                      final mensaje = _mensajes[index];
-                      final esMio = mensaje.emisorId == widget.usuarioActualId;
-
-                      return Align(
-                        alignment: esMio
-                            ? Alignment.centerRight
-                            : Alignment.centerLeft,
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxWidth: MediaQuery.of(context).size.width * 0.75,
-                          ),
-                          child: Container(
-                            margin: const EdgeInsets.only(bottom: 10),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 14, vertical: 10),
-                            decoration: BoxDecoration(
-                              color: esMio
-                                  ? AppColors.verdeMilpa
-                                  : AppColors.verdeMilpaSuave,
-                              borderRadius: esMio
-                                  ? const BorderRadius.only(
-                                      topLeft: Radius.circular(18),
-                                      topRight: Radius.circular(18),
-                                      bottomLeft: Radius.circular(18),
-                                      bottomRight: Radius.circular(4),
-                                    )
-                                  : const BorderRadius.only(
-                                      topLeft: Radius.circular(18),
-                                      topRight: Radius.circular(18),
-                                      bottomLeft: Radius.circular(4),
-                                      bottomRight: Radius.circular(18),
-                                    ),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  mensaje.mensaje,
-                                  style: AppTextStyles.cuerpo.copyWith(
-                                    color: esMio
-                                        ? Colors.white
-                                        : AppColors.textoPrimario,
-                                  ),
-                                ),
-                                const SizedBox(height: 6),
-                                Align(
-                                  alignment: Alignment.bottomRight,
-                                  child: Text(
-                                    _formatearFecha(mensaje.fechaEnvio),
-                                    style: AppTextStyles.caption.copyWith(
-                                      color: esMio
-                                          ? Colors.white70
-                                          : AppColors.textoSecundario,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+      child: Scaffold(
+        // HACEMOS EL SCAFFOLD TRANSPARENTE PARA QUE SE VEA LA IMAGEN DE FONDO
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: Row(
+            children: [
+              const CircleAvatar(
+                radius: 18,
+                backgroundColor: AppColors.verdeMilpaSuave,
+                child: Icon(Icons.person, color: AppColors.verdeMilpa),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  widget.nombreContacto,
+                  style: AppTextStyles.cuerpoDestacado,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                SafeArea(
-                  child: Container(
-                    padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
-                    decoration: const BoxDecoration(
-                      color: AppColors.superficie,
-                      border: Border(top: BorderSide(color: AppColors.borde)),
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: _mensajeController,
-                            minLines: 1,
-                            maxLines: 4,
-                            decoration: InputDecoration(
-                              hintText: lang.translate('chat_message_hint'),
-                              filled: true,
-                              fillColor: AppColors.cremaTortilla,
-                              contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 12),
-                              border: const OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(20)),
-                                borderSide: BorderSide.none,
+              ),
+              const SizedBox(width: 6),
+              Icon(
+                Icons.circle,
+                size: 10,
+                color: _conectado ? Colors.green : Colors.grey,
+              ),
+            ],
+          ),
+        ),
+        body: _cargando
+            ? const Center(
+                child: CircularProgressIndicator(color: AppColors.verdeMilpa),
+              )
+            : Column(
+                children: [
+                  Expanded(
+                    child: ListView.builder(
+                      controller: _scrollController,
+                      padding: const EdgeInsets.all(16),
+                      itemCount: _mensajes.length,
+                      itemBuilder: (context, index) {
+                        final mensaje = _mensajes[index];
+                        final esMio =
+                            mensaje.emisorId == widget.usuarioActualId;
+
+                        return Align(
+                          alignment: esMio
+                              ? Alignment.centerRight
+                              : Alignment.centerLeft,
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth:
+                                  MediaQuery.of(context).size.width * 0.75,
+                            ),
+                            child: Container(
+                              margin: const EdgeInsets.only(bottom: 10),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 14, vertical: 10),
+                              decoration: BoxDecoration(
+                                color: esMio
+                                    ? AppColors.verdeMilpa
+                                    : AppColors.verdeMilpaSuave,
+                                borderRadius: esMio
+                                    ? const BorderRadius.only(
+                                        topLeft: Radius.circular(18),
+                                        topRight: Radius.circular(18),
+                                        bottomLeft: Radius.circular(18),
+                                        bottomRight: Radius.circular(4),
+                                      )
+                                    : const BorderRadius.only(
+                                        topLeft: Radius.circular(18),
+                                        topRight: Radius.circular(18),
+                                        bottomLeft: Radius.circular(4),
+                                        bottomRight: Radius.circular(18),
+                                      ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    mensaje.mensaje,
+                                    style: AppTextStyles.cuerpo.copyWith(
+                                      color: esMio
+                                          ? Colors.white
+                                          : AppColors.textoPrimario,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Align(
+                                    alignment: Alignment.bottomRight,
+                                    child: Text(
+                                      _formatearFecha(mensaje.fechaEnvio),
+                                      style: AppTextStyles.caption.copyWith(
+                                        color: esMio
+                                            ? Colors.white70
+                                            : AppColors.textoSecundario,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        FloatingActionButton(
-                          onPressed: _conectado ? _enviarMensaje : null,
-                          backgroundColor: AppColors.mensajeriaAzul,
-                          child: const Icon(Icons.send, color: Colors.white),
-                        ),
-                      ],
+                        );
+                      },
                     ),
                   ),
-                ),
-              ],
-            ),
+                  SafeArea(
+                    child: Container(
+                      padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+                      decoration: const BoxDecoration(
+                        color: AppColors.superficie,
+                        border: Border(top: BorderSide(color: AppColors.borde)),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _mensajeController,
+                              minLines: 1,
+                              maxLines: 4,
+                              decoration: InputDecoration(
+                                hintText: lang.translate('chat_message_hint'),
+                                filled: true,
+                                fillColor: AppColors.cremaTortilla,
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 12),
+                                border: const OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(20)),
+                                  borderSide: BorderSide.none,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          FloatingActionButton(
+                            onPressed: _conectado ? _enviarMensaje : null,
+                            backgroundColor: AppColors.mensajeriaAzul,
+                            child: const Icon(Icons.send, color: Colors.white),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+      ),
     );
   }
 }
