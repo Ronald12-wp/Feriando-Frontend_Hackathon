@@ -23,7 +23,7 @@ class ApiClient {
   static String get baseUrl {
     const env = String.fromEnvironment(
       'API_BASE_URL',
-      defaultValue: 'http://10.114.89.98:5080/api',
+      defaultValue:'https://feriandoapi20261008221451-e3f6ded3exg6fyb5.centralus-01.azurewebsites.net/api',
     );
     try {
       final uri = Uri.parse(env);

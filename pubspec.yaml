@@ -36,6 +36,7 @@ flutter:
   assets:
     - assets/images/logo.jpeg
     - assets/images/app_icon.jpeg
+    - assets/images/fondo_chat.png
 
 flutter_icons:
   android: true
